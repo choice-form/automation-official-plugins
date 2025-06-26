@@ -88,13 +88,10 @@ jobs:
           PLUGIN_NAME=$(node -p "require('./package.json').name")
           PLUGIN_VERSION=$(node -p "require('./package.json').version")
 
-          # 创建发布包目录
-          mkdir -p ../dist
-
           # 查找 .choiceformpkg 文件
           if ls *.choiceformpkg 1> /dev/null 2>&1; then
             echo "Found .choiceformpkg files"
-            cp *.choiceformpkg ../dist/
+            echo "SDK已经生成了包文件"
           else
             echo "No .choiceformpkg files found, creating package manually..."
             
@@ -117,11 +114,11 @@ jobs:
             tar -czf "../${PACKAGE_NAME}" .
             cd ..
             
-            # 复制到 dist 目录
-            cp "${PACKAGE_NAME}" ../dist/
+            # 确保包文件在当前目录可访问
+            cp "${PACKAGE_NAME}" .
             
             # 清理临时文件
-            rm -rf temp_package "${PACKAGE_NAME}"
+            rm -rf temp_package
             
             echo "Created package: ${PACKAGE_NAME}"
           fi
@@ -129,15 +126,13 @@ jobs:
       - name: Check Created Files
         run: |
           echo "Files in current directory:"
-          ls -la
-          echo "Files in ../dist directory:"
-          ls -la ../dist/ || echo "No ../dist directory"
+          ls -la *.choiceformpkg || echo "No .choiceformpkg files"
 
       - name: Upload Plugin Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: plugin-${{ matrix.plugin }}
-          path: ../dist/
+          path: "*.choiceformpkg"
           retention-days: 30
 
   create-release:
