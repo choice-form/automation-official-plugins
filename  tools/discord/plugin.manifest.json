@@ -1,0 +1,73 @@
+{
+  "name": "@choiceform/discord",
+  "version": "1.0.0",
+  "description": "Discord is a communication platform designed for communities. It offers features like text and voice channels, direct messaging, and server-based organization. In Dify, Discord tools allow users to create a random bot with random username and avatar to send messages.",
+  "author": "wester",
+  "nodeType": "@choiceform/discord.action",
+  "automationNodeType": "action.discord",
+  "displayName": "Discord",
+  "category": "action",
+  "domain": "communication",
+  "subCategory": "communication",
+  "icon": "icon.svg",
+  "tags": [
+    "discord",
+    "action",
+    "communication",
+    "automation"
+  ],
+  "isPopular": false,
+  "sdkVersion": "^1.0.0",
+  "automationConfigs": {
+    "registry": {
+      "type": "action.discord",
+      "name": "Discord",
+      "description": "Discord is a communication platform designed for communities. It offers features like text and voice channels, direct messaging, and server-based organization. In Dify, Discord tools allow users to create a random bot with random username and avatar to send messages.",
+      "categoryId": "action",
+      "subCategoryId": "communication",
+      "icon": "icon.svg",
+      "tags": [
+        "discord",
+        "action",
+        "communication",
+        "automation"
+      ],
+      "isPopular": false
+    },
+    "ports": {
+      "ports": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "Input",
+          "allowMultiple": false
+        },
+        {
+          "id": "output",
+          "type": "output",
+          "label": "Response",
+          "allowMultiple": true
+        }
+      ]
+    },
+    "toolbar": {
+      "position": "top",
+      "buttons": [
+        "run",
+        "delete",
+        "activate",
+        "more"
+      ],
+      "showContent": true
+    },
+    "layout": {
+      "width": 180,
+      "minHeight": 100,
+      "showContent": true
+    }
+  },
+  "metadata": {
+    "createdAt": "2025-06-26T03:43:30.667Z",
+    "updatedAt": "2025-06-26T03:43:30.668Z"
+  }
+}
