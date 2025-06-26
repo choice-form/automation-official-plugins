@@ -179,10 +179,13 @@ jobs:
           # 生成插件注册表
           echo "Generating plugin registry..."
 
-          cat > registry/registry.json << 'EOF'
+          # 生成基础 JSON 结构
+          CURRENT_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          cat > registry/registry.json << EOF
           {
             "version": "1.0.0",
-            "generated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "generated": "$CURRENT_DATE",
             "repository": "automation-official-plugins",
             "plugins": {
               "extensions": [],
@@ -192,7 +195,10 @@ jobs:
           }
           EOF
 
-          # 扫描每个插件类型
+          # 创建临时文件来构建完整的 JSON
+          echo '{"version": "1.0.0","generated": "'$CURRENT_DATE'","repository": "automation-official-plugins","plugins": {"extensions": [],"models": [],"tools": []}}' > temp_registry.json
+
+          # 扫描每个插件类型并动态构建 JSON
           for category in extensions models tools; do
             if [[ -d "$category" ]]; then
               for plugin_dir in $category/*/; do
@@ -206,7 +212,7 @@ jobs:
                   PLUGIN_AUTHOR=$(node -p "require('./$plugin_dir/package.json').author" 2>/dev/null || echo "ChoiceForm")
                   
                   if [[ ! -z "$PLUGIN_NAME" ]]; then
-                    # 添加到注册表
+                    # 使用 jq 添加插件到对应分类
                     PLUGIN_ENTRY=$(cat << EOF
           {
             "name": "$PLUGIN_NAME",
@@ -214,21 +220,29 @@ jobs:
             "description": "$PLUGIN_DESC",
             "author": "$PLUGIN_AUTHOR",
             "category": "$category",
-            "download_url": "https://github.com/choiceform/automation-official-plugins/releases/latest/download/${PLUGIN_NAME}-${PLUGIN_VERSION}.choiceformpkg",
-            "repository_url": "https://github.com/choiceform/automation-official-plugins/tree/main/$plugin_dir",
-            "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            "download_url": "https://github.com/choice-form/automation-official-plugins/releases/latest/download/${PLUGIN_NAME}-${PLUGIN_VERSION}.choiceformpkg",
+            "repository_url": "https://github.com/choice-form/automation-official-plugins/tree/main/$plugin_dir",
+            "updated_at": "$CURRENT_DATE"
           }
           EOF
           )
-                    echo "Added $PLUGIN_NAME to registry"
+                    # 使用 jq 将插件添加到对应分类
+                    echo "$PLUGIN_ENTRY" | jq -c '.' > temp_plugin.json
+                    cat temp_registry.json | jq ".plugins.$category += [$(cat temp_plugin.json)]" > temp_registry_new.json
+                    mv temp_registry_new.json temp_registry.json
+                    echo "Added $PLUGIN_NAME to $category registry"
                   fi
                 fi
               done
             fi
           done
 
-          # 生成简单的 HTML 页面
-          cat > registry/index.html << 'EOF'
+          # 美化 JSON 并保存
+          cat temp_registry.json | jq '.' > registry/registry.json
+          rm -f temp_registry.json temp_plugin.json
+
+          # 生成 HTML 页面
+          cat > registry/index.html << EOF
           <!DOCTYPE html>
           <html>
           <head>
