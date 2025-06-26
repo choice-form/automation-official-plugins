@@ -1,6 +1,6 @@
 {
   "name": "@choiceform/discord",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Discord is a communication platform designed for communities. It offers features like text and voice channels, direct messaging, and server-based organization. In Dify, Discord tools allow users to create a random bot with random username and avatar to send messages.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
