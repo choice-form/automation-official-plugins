@@ -1,6 +1,6 @@
-# ChoiceForm Automation Official Plugins
+# @choiceform/automation-official-plugins
 
-🔌 **官方维护的高质量插件集合** - 为 ChoiceForm Automation 平台提供核心扩展功能
+🔌 **官方维护的高质量插件集合** - 为 @choiceform/automation 平台提供核心扩展功能
 
 [![Official](https://img.shields.io/badge/plugins-official-blue)](https://github.com/choiceform/automation-official-plugins)
 [![Quality](https://img.shields.io/badge/quality-enterprise-green)](https://github.com/choiceform/automation-official-plugins)
@@ -8,7 +8,7 @@
 
 ## 🎯 仓库目标
 
-本仓库包含由 ChoiceForm 核心团队官方维护的插件，代表平台的最高质量标准。所有插件经过严格的代码审查、安全验证和性能优化。
+本仓库包含由 choiceform 核心团队官方维护的插件，代表平台的最高质量标准。所有插件经过严格的代码审查、安全验证和性能优化。
 
 ## 📁 目录结构
 
