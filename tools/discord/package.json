@@ -1,6 +1,6 @@
 {
   "name": "@choiceform/discord",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Discord is a communication platform designed for communities. It offers features like text and voice channels, direct messaging, and server-based organization. In Dify, Discord tools allow users to create a random bot with random username and avatar to send messages.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,14 +21,14 @@
   "author": "wester",
   "license": "MIT",
   "dependencies": {
-    "@choiceform/automation-sdk": "^1.0.0"
+    "@choiceform/automation-sdk": "^1.2.1"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
     "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
     "jest": "^29.5.0",
-    "ts-jest": "^29.1.0"
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.0"
   },
   "files": [
     "dist",
