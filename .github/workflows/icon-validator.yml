@@ -1,0 +1,185 @@
+name: Icon Validation
+
+on:
+  pull_request:
+    paths:
+      - "tools/*/icon.*"
+      - "extensions/*/icon.*"
+      - "models/*/icon.*"
+
+jobs:
+  validate-icons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install image validation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick librsvg2-bin
+          npm install -g svgo
+
+      - name: Validate icons
+        run: |
+          echo "🎨 Starting icon validation..."
+
+          # 查找所有图标文件
+          find . -name "icon.*" -type f | while read icon_file; do
+            echo "📝 Validating: $icon_file"
+            
+            # 获取文件信息
+            file_size=$(stat -c%s "$icon_file")
+            file_ext="${icon_file##*.}"
+            
+            # 验证文件格式
+            case "${file_ext,,}" in
+              svg)
+                echo "✅ SVG format detected"
+                
+                # 检查 SVG 文件大小
+                if [ $file_size -gt 10240 ]; then # 10KB
+                  echo "❌ SVG file too large: ${file_size} bytes (max: 10KB)"
+                  echo "suggestion=Consider optimizing your SVG with SVGO" >> $GITHUB_OUTPUT
+                  exit 1
+                fi
+                
+                # 验证 SVG 内容
+                if grep -q "javascript\|script\|onclick" "$icon_file"; then
+                  echo "❌ SVG contains JavaScript (not allowed)"
+                  exit 1
+                fi
+                
+                # 检查 SVG 尺寸
+                svg_info=$(identify -format "%w %h" "$icon_file" 2>/dev/null || echo "0 0")
+                width=$(echo $svg_info | cut -d' ' -f1)
+                height=$(echo $svg_info | cut -d' ' -f2)
+                
+                if [ "$width" != "$height" ]; then
+                  echo "⚠️  Warning: Icon is not square (${width}x${height})"
+                  echo "suggestion=Please use square dimensions for better display" >> $GITHUB_OUTPUT
+                fi
+                
+                # 优化 SVG（如果需要）
+                if [ $file_size -gt 5120 ]; then # 5KB
+                  echo "🔧 Optimizing SVG..."
+                  svgo --input "$icon_file" --output "${icon_file}.optimized" --quiet
+                  optimized_size=$(stat -c%s "${icon_file}.optimized")
+                  echo "📊 Original: ${file_size}B → Optimized: ${optimized_size}B"
+                  
+                  if [ $optimized_size -lt $file_size ]; then
+                    echo "suggestion=Your SVG can be optimized to save $(( (file_size - optimized_size) ))B" >> $GITHUB_OUTPUT
+                  fi
+                  rm -f "${icon_file}.optimized"
+                fi
+                ;;
+                
+              png)
+                echo "✅ PNG format detected"
+                
+                # 检查 PNG 文件大小
+                if [ $file_size -gt 20480 ]; then # 20KB
+                  echo "❌ PNG file too large: ${file_size} bytes (max: 20KB)"
+                  echo "suggestion=Consider using SVG format or compressing PNG" >> $GITHUB_OUTPUT
+                  exit 1
+                fi
+                
+                # 获取 PNG 尺寸
+                png_info=$(identify -format "%w %h" "$icon_file")
+                width=$(echo $png_info | cut -d' ' -f1)
+                height=$(echo $png_info | cut -d' ' -f2)
+                
+                # 验证尺寸
+                if [ "$width" != "$height" ]; then
+                  echo "❌ PNG must be square, got ${width}x${height}"
+                  exit 1
+                fi
+                
+                                 if [ $width -lt 16 ] || [ $width -gt 128 ]; then
+                   echo "❌ PNG size ${width}x${height} outside allowed range (16x16 to 128x128)"
+                   exit 1
+                 fi
+                
+                # 检查是否有透明背景
+                if ! identify -format "%A" "$icon_file" | grep -q "True"; then
+                  echo "⚠️  Warning: PNG doesn't have transparency"
+                  echo "suggestion=Consider adding transparent background for better integration" >> $GITHUB_OUTPUT
+                fi
+                ;;
+                
+              jpg|jpeg)
+                echo "⚠️  JPEG format detected (not recommended)"
+                
+                if [ $file_size -gt 15360 ]; then # 15KB
+                  echo "❌ JPEG file too large: ${file_size} bytes (max: 15KB)"
+                  exit 1
+                fi
+                
+                echo "suggestion=Consider using SVG or PNG with transparency instead of JPEG" >> $GITHUB_OUTPUT
+                ;;
+                
+              *)
+                echo "❌ Unsupported format: $file_ext"
+                echo "suggestion=Please use SVG (recommended), PNG, or JPEG format" >> $GITHUB_OUTPUT
+                exit 1
+                ;;
+            esac
+            
+            echo "✅ Icon validation passed: $icon_file"
+          done
+
+          echo "🎉 All icons validated successfully!"
+
+      - name: Comment on PR with suggestions
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const suggestions = [];
+
+            // 读取所有建议
+            if (fs.existsSync(process.env.GITHUB_OUTPUT)) {
+              const output = fs.readFileSync(process.env.GITHUB_OUTPUT, 'utf8');
+              const lines = output.split('\n');
+              
+              lines.forEach(line => {
+                if (line.startsWith('suggestion=')) {
+                  suggestions.push(line.substring(11));
+                }
+              });
+            }
+
+            if (suggestions.length > 0) {
+              const body = `## 🎨 Icon Validation Results
+
+            Your icons have been validated! Here are some suggestions for improvement:
+
+            ${suggestions.map(s => `- 💡 ${s}`).join('\n')}
+
+            ### 📏 Icon Guidelines
+
+            **Recommended Specs:**
+            - **Format**: SVG (preferred) or PNG with transparency  
+                         - **Size**: 24x24px to 128x128px, square (1:1 ratio)
+            - **File Size**: SVG ≤ 10KB, PNG ≤ 20KB
+            - **Style**: Simple, clear, recognizable at small sizes
+
+            **SVG Requirements:**
+            - No external dependencies
+            - No JavaScript code
+            - Optimized paths and shapes
+
+            Need help? Check our [Icon Design Guide](https://github.com/choice-form/automation-official-plugins/blob/main/docs/ICON_GUIDELINES.md) 🎯`;
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: body
+              });
+            }

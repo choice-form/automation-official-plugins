@@ -9,7 +9,7 @@
   "category": "action",
   "domain": "communication",
   "subCategory": "communication",
-  "icon": "icon.svg",
+  "icon": "icon.png",
   "tags": ["discord", "action", "communication", "automation"],
   "isPopular": false,
   "sdkVersion": "^1.0.0",
@@ -20,7 +20,7 @@
       "description": "Discord is a communication platform designed for communities. It offers features like text and voice channels, direct messaging, and server-based organization. In Dify, Discord tools allow users to create a random bot with random username and avatar to send messages.",
       "categoryId": "action",
       "subCategoryId": "communication",
-      "icon": "icon.svg",
+      "icon": "icon.png",
       "tags": ["discord", "action", "communication", "automation"],
       "isPopular": false
     },
