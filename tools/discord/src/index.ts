@@ -6,6 +6,8 @@ import type {
   ExecutionResult,
   PluginManifest,
   PortConfig,
+  NodeConfigSchema,
+  ConfigField,
 } from "@choiceform/automation-sdk";
 
 // Discord随机用户名和头像
@@ -156,6 +158,103 @@ export class Discord extends ActionNode {
           allowMultiple: true,
         },
       ],
+    };
+  }
+
+  getConfigSchema(): NodeConfigSchema {
+    return {
+      fields: [
+        {
+          key: "webhookUrl",
+          type: "string",
+          label: "Webhook URL",
+          description: "Discord webhook URL for sending messages",
+          required: true,
+          sensitive: true,
+          placeholder: "https://discord.com/api/webhooks/...",
+          validation: {
+            pattern: ".*discord\\.com/api/webhooks/.*",
+            message: "Must be a valid Discord webhook URL",
+          },
+          ui: {
+            width: "full",
+            group: "connection",
+            order: 1,
+          },
+        },
+        {
+          key: "content",
+          type: "string",
+          label: "Message Content",
+          description: "The text content of the message",
+          required: false,
+          supportExpression: true,
+          placeholder: "Enter your message...",
+          validation: {
+            max: 2000,
+            message: "Message content cannot exceed 2000 characters",
+          },
+          ui: {
+            multiline: true,
+            width: "full",
+            group: "message",
+            order: 2,
+          },
+        },
+        {
+          key: "username",
+          type: "string",
+          label: "Bot Username",
+          description:
+            "Custom username for the bot (optional, random if not provided)",
+          required: false,
+          supportExpression: true,
+          placeholder: "AutoBot",
+          validation: {
+            max: 80,
+            message: "Username cannot exceed 80 characters",
+          },
+          ui: {
+            width: "medium",
+            group: "appearance",
+            order: 3,
+          },
+        },
+        {
+          key: "avatarUrl",
+          type: "string",
+          label: "Bot Avatar URL",
+          description:
+            "Custom avatar URL for the bot (optional, random if not provided)",
+          required: false,
+          supportExpression: true,
+          placeholder: "https://example.com/avatar.png",
+          validation: {
+            pattern: "https?://.*\\.(png|jpg|jpeg|gif|webp)",
+            message: "Must be a valid image URL (png, jpg, jpeg, gif, webp)",
+          },
+          ui: {
+            width: "full",
+            group: "appearance",
+            order: 4,
+          },
+        },
+      ],
+      groups: {
+        connection: {
+          label: "Connection Settings",
+          description: "Discord webhook configuration",
+        },
+        message: {
+          label: "Message Content",
+          description: "What to send to Discord",
+        },
+        appearance: {
+          label: "Bot Appearance",
+          description: "Customize bot username and avatar",
+          collapsed: true,
+        },
+      },
     };
   }
 

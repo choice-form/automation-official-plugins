@@ -5,6 +5,32 @@ All notable changes to this Discord plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2024-12-24
+
+### Added
+
+- 🎯 **Configuration Schema System**: Comprehensive user configuration fields
+- 📋 **Structured Configuration**: Webhook URL, message content, bot appearance settings
+- 🔒 **Field Validation**: URL pattern validation, character limits, required fields
+- 🎨 **UI Enhancements**: Field grouping, ordering, and display hints
+- 🔧 **Expression Support**: Dynamic content support for message fields
+- 🛡️ **Security**: Sensitive field marking for webhook URLs
+
+### Technical
+
+- Updated to @choiceform/automation-sdk v1.4.0
+- Added NodeConfigSchema with 4 configuration fields
+- Implemented field groups: Connection, Message, Appearance
+- Added comprehensive validation rules and UI hints
+- Enhanced automation platform integration capabilities
+
+### Configuration Fields
+
+- **Webhook URL**: Required, validated Discord webhook URL
+- **Message Content**: Optional, supports expressions, 2000 char limit
+- **Bot Username**: Optional, supports expressions, 80 char limit
+- **Bot Avatar URL**: Optional, supports expressions, image URL validation
+
 ## [1.0.8] - 2024-12-24
 
 ### Changed

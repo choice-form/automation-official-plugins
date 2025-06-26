@@ -82,10 +82,10 @@ jobs:
       - name: Package Plugin
         run: |
           cd ${{ matrix.plugin }}
-          
+
           echo "🔨 Building plugin package with SDK v1.3.0+..."
           npx @choiceform/automation-sdk build
-          
+
           # 验证包文件创建成功
           if ls *.choiceformpkg 1> /dev/null 2>&1; then
             echo "✅ Package created successfully"
