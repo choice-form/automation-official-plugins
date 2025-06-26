@@ -1,0 +1,71 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 插件開發指南
+
+## 插件基本結構
+每個插件必須包含以下核心文件：
+
+### 必需文件
+- `src/index.ts` - 插件主實現文件
+- `package.json` - 包配置和依賴
+- `plugin.manifest.json` - 插件清單配置
+- `plugin.registry.json` - 註冊表配置  
+- `tsconfig.json` - TypeScript 配置
+- `jest.config.js` - Jest 測試配置
+- `README.md` - 插件文檔
+- `icon.svg` - 插件圖標
+
+### 可選文件
+- `tests/` - 測試文件目錄
+- `CHANGELOG.md` - 變更日志
+
+## 插件實現模式
+
+### ActionNode 基類
+所有 Action 插件都必須繼承 `ActionNode` 類：
+
+```typescript
+import { ActionNode } from "@choiceform/automation-sdk";
+
+export class MyPlugin extends ActionNode {
+  async setup(): Promise<void> {
+    // 初始化邏輯
+  }
+  
+  async teardown(): Promise<void> {
+    // 清理邏輯
+  }
+  
+  getManifest(): PluginManifest {
+    // 返回插件清單
+  }
+  
+  getPortConfig(): PortConfig {
+    // 返回端口配置
+  }
+  
+  async execute(
+    inputs: Record<string, unknown>,
+    context: PluginExecutionContext
+  ): Promise<ExecutionResult> {
+    // 主要執行邏輯
+  }
+}
+```
+
+### 插件導出
+插件必須導出一個默認實例：
+```typescript
+export default new MyPlugin();
+```
+
+## 開發命令
+- `pnpm build` - 構建插件
+- `pnpm dev` - 開發模式（監聽變更）
+- `pnpm test` - 運行測試
+- `pnpm validate` - 驗證插件配置
+
+參考 [tools/discord/src/index.ts](mdc:tools/discord/src/index.ts) 作為完整的實現示例。

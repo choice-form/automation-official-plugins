@@ -1,0 +1,122 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 插件清單配置指南
+
+## plugin.manifest.json 結構
+每個插件都必須包含完整的清單配置文件。
+
+### 基本信息
+```json
+{
+  "name": "@choiceform/plugin-name",
+  "version": "1.0.0",
+  "description": "插件描述",
+  "author": "作者名稱",
+  "nodeType": "@choiceform/plugin-name.action",
+  "automationNodeType": "action.plugin-name",
+  "displayName": "顯示名稱",
+  "category": "action|extension|model",
+  "domain": "領域分類",
+  "subCategory": "子分類",
+  "icon": "icon.svg",
+  "tags": ["標籤1", "標籤2"],
+  "isPopular": false,
+  "sdkVersion": "^1.0.0"
+}
+```
+
+### 自動化配置
+```json
+{
+  "automationConfigs": {
+    "registry": {
+      "type": "action.plugin-name",
+      "name": "顯示名稱",
+      "description": "註冊表描述",
+      "categoryId": "action",
+      "subCategoryId": "communication",
+      "icon": "icon.svg",
+      "tags": ["標籤"],
+      "isPopular": false
+    },
+    "ports": {
+      "ports": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "Input",
+          "allowMultiple": false
+        },
+        {
+          "id": "success",
+          "type": "output", 
+          "label": "Success",
+          "allowMultiple": true
+        },
+        {
+          "id": "error",
+          "type": "output",
+          "label": "Error", 
+          "allowMultiple": true
+        }
+      ]
+    },
+    "toolbar": {
+      "position": "top",
+      "buttons": ["run", "delete", "activate", "more"],
+      "showContent": true
+    },
+    "layout": {
+      "width": 200,
+      "minHeight": 120,
+      "showContent": true
+    }
+  }
+}
+```
+
+## 分類體系
+
+### 主要分類
+- `action` - 動作插件
+- `extension` - 擴展插件  
+- `model` - 模型插件
+
+### 領域分類
+- `communication` - 通訊類
+- `data` - 數據處理類
+- `ai` - AI 相關類
+- `utility` - 工具類
+
+### 子分類示例
+- `messaging` - 消息發送
+- `notification` - 通知服務
+- `storage` - 存儲服務
+- `analysis` - 數據分析
+
+## 端口配置
+標準端口配置模式：
+- `input` - 輸入端口（通常只有一個）
+- `success` - 成功輸出端口
+- `error` - 錯誤輸出端口
+
+## 版本管理
+- 遵循語義化版本控制 (SemVer)
+- 主版本.次版本.修訂版本
+- SDK 版本使用 `^1.0.0` 格式
+
+## 元數據
+包含創建和更新時間戳：
+```json
+{
+  "metadata": {
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  }
+}
+```
+
+參考 [tools/discord/plugin.manifest.json](mdc:tools/discord/plugin.manifest.json) 查看完整的清單配置示例。

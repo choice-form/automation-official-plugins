@@ -1,6 +1,6 @@
-# ChoiceForm Automation Official Plugins
+# @choiceForm/automation-official-plugins
 
-🔌 **官方维护的高质量插件集合** - 为 ChoiceForm Automation 平台提供核心扩展功能
+🔌 **官方维护的高质量插件集合** - 为 @choiceForm/automation 平台提供核心扩展功能
 
 [![Official](https://img.shields.io/badge/plugins-official-blue)](https://github.com/choiceform/automation-official-plugins)
 [![Quality](https://img.shields.io/badge/quality-enterprise-green)](https://github.com/choiceform/automation-official-plugins)

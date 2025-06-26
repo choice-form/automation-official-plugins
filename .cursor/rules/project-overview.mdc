@@ -1,0 +1,38 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# ChoiceForm 自動化官方插件項目概覽
+
+## 項目結構
+這是一個 ChoiceForm 自動化平台的官方插件倉庫，採用 monorepo 結構：
+
+### 目錄結構
+- `extensions/` - 擴展插件（輕量級 HTTP 端點功能）
+- `models/` - 模型插件（AI 模型提供商集成）  
+- `tools/` - 工具插件（第三方服務工具）
+- `.github/workflows/` - 自動化工作流
+
+### 插件類型
+1. **Extensions**: 提供自定義 API 和 Webhook 處理能力
+2. **Models**: 支持主流 LLM 和自定義模型
+3. **Tools**: 為工作流提供豐富的功能節點
+
+## 核心文件
+- [README.md](mdc:README.md) - 項目主要文檔
+- 每個插件都包含：
+  - `package.json` - 包配置
+  - `plugin.manifest.json` - 插件清單
+  - `plugin.registry.json` - 註冊表配置
+  - `src/index.ts` - 主要實現文件
+  - `tsconfig.json` - TypeScript 配置
+  - `jest.config.js` - 測試配置
+
+## 示例插件
+參考 [tools/discord/](mdc:tools/discord) 作為完整的插件實現示例：
+- [tools/discord/src/index.ts](mdc:tools/discord/src/index.ts) - Discord 插件實現
+- [tools/discord/plugin.manifest.json](mdc:tools/discord/plugin.manifest.json) - 插件清單示例
+- [tools/discord/package.json](mdc:tools/discord/package.json) - 包配置示例
+
+這是一個企業級質量標準的官方插件集合，所有插件都經過嚴格的代碼審查和測試。

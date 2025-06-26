@@ -1,0 +1,64 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 代碼規範和質量標準
+
+## TypeScript 規範
+- **嚴格模式**: 所有項目必須使用 TypeScript 嚴格模式
+- **禁止 any 類型**: 永遠不允許使用 `any` 類型，必須使用具體類型
+- **類型定義**: 所有函數、變量、接口都必須有明確的類型定義
+
+### 示例類型定義
+```typescript
+interface PluginInputs {
+  webhookUrl?: string;
+  content?: string;
+  username?: string;
+}
+
+interface ExecutionResult {
+  success: boolean;
+  data?: Record<string, unknown>;
+  error?: string;
+}
+```
+
+## 包管理規範
+- **使用 pnpm**: 始終使用 `pnpm` 而不是 `npm` 或 `yarn`
+- **版本管理**: 精確指定依賴版本
+- **SDK 依賴**: 必須依賴 `@choiceform/automation-sdk`
+
+## 錯誤處理
+- **統一錯誤格式**: 所有錯誤都必須返回標準的 ExecutionResult 格式
+- **詳細錯誤信息**: 提供清晰的錯誤消息和調試信息
+- **日誌記錄**: 使用 context.log 記錄執行過程
+
+### 錯誤處理示例
+```typescript
+try {
+  // 執行邏輯
+  return { success: true, data: result };
+} catch (error) {
+  const errorMessage = error instanceof Error ? error.message : "未知錯誤";
+  context.log("error", "執行失敗", { error: errorMessage });
+  return {
+    success: false,
+    error: errorMessage,
+    data: { error: errorMessage, timestamp: new Date().toISOString() }
+  };
+}
+```
+
+## Git 提交規範
+- **提交信息**: 始終使用英文編寫 commit 信息
+- **格式**: 使用 `feat:`, `fix:`, `docs:`, `test:` 等前綴
+- **描述**: 簡潔明了地描述更改內容
+
+## 質量要求
+- **測試覆蓋率**: 單元測試覆蓋率必須 > 90%
+- **ESLint**: 代碼必須通過 ESLint 檢查，0 錯誤
+- **文檔完整**: 每個插件都必須有完整的 README 文檔
+
+參考 [tools/discord/package.json](mdc:tools/discord/package.json) 查看標準的包配置。

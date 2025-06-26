@@ -1,0 +1,84 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 測試指南
+
+## 測試要求
+- **覆蓋率標準**: 所有插件的測試覆蓋率必須達到 90% 以上
+- **測試框架**: 使用 Jest 作為測試框架
+- **測試類型**: 必須包含單元測試，推薦集成測試
+
+## 測試結構
+```
+tests/
+├── __mocks__/           # Mock 文件
+│   └── @choiceform/
+│       └── automation-sdk.ts
+├── index.test.ts        # 主測試文件
+└── utils.test.ts        # 工具函數測試
+```
+
+## Mock 配置
+為 SDK 創建 Mock 文件以支持測試：
+
+參考 [tools/discord/tests/__mocks__/@choiceform/automation-sdk.ts](mdc:tools/discord/tests/__mocks__/@choiceform/automation-sdk.ts)
+
+## 測試模式
+
+### 基本測試結構
+```typescript
+describe('PluginName', () => {
+  let plugin: PluginName;
+  
+  beforeEach(() => {
+    plugin = new PluginName();
+  });
+  
+  describe('execute', () => {
+    it('should execute successfully', async () => {
+      // 測試邏輯
+    });
+    
+    it('should handle errors properly', async () => {
+      // 錯誤處理測試
+    });
+  });
+});
+```
+
+### 必須測試的場景
+1. **成功執行**: 正常輸入的成功執行
+2. **錯誤處理**: 各種錯誤情況的處理
+3. **邊界條件**: 極端輸入值的處理
+4. **參數驗證**: 必需參數的驗證
+
+### 測試命令
+- `pnpm test` - 運行所有測試
+- `pnpm test --coverage` - 運行測試並生成覆蓋率報告
+- `pnpm test --watch` - 監聽模式運行測試
+
+## Jest 配置
+每個插件都必須包含 `jest.config.js` 文件：
+
+```javascript
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/**/*.d.ts',
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90
+    }
+  }
+};
+```
+
+參考 [tools/discord/tests/index.test.ts](mdc:tools/discord/tests/index.test.ts) 查看完整的測試示例。

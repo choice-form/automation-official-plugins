@@ -1,0 +1,180 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# 最佳實踐和常見問題
+
+## 開發最佳實踐
+
+### 1. 代碼組織
+- **單一職責**: 每個插件只做一件事，做到極致
+- **模塊化設計**: 將複雜邏輯拆分為小的、可測試的函數
+- **清晰命名**: 使用描述性的變量和函數名稱
+
+### 2. 錯誤處理策略
+```typescript
+// ✅ 正確的錯誤處理
+try {
+  const result = await someAsyncOperation();
+  context.log("info", "操作成功", { result });
+  return { success: true, data: result };
+} catch (error) {
+  const errorMessage = error instanceof Error ? error.message : "未知錯誤";
+  context.log("error", "操作失敗", { error: errorMessage });
+  return {
+    success: false,
+    error: errorMessage,
+    data: { error: errorMessage, timestamp: new Date().toISOString() }
+  };
+}
+
+// ❌ 錯誤的錯誤處理
+try {
+  // 邏輯...
+} catch (e: any) {  // 禁止使用 any
+  throw e;  // 不要直接拋出錯誤
+}
+```
+
+### 3. 輸入驗證
+```typescript
+// ✅ 嚴格的輸入驗證
+async execute(inputs: Record<string, unknown>, context: PluginExecutionContext) {
+  const { webhookUrl, content } = inputs as MyPluginInputs;
+  
+  if (!webhookUrl) {
+    throw new Error("Webhook URL is required");
+  }
+  
+  if (!content && !embeds?.length) {
+    throw new Error("Either content or embeds must be provided");
+  }
+  
+  // 驗證 URL 格式
+  if (!isValidUrl(webhookUrl)) {
+    throw new Error("Invalid webhook URL format");
+  }
+}
+```
+
+### 4. 日誌記錄
+```typescript
+// ✅ 結構化日誌
+context.log("info", "開始執行插件", {
+  pluginName: "Discord",
+  inputCount: Object.keys(inputs).length
+});
+
+context.log("debug", "發送請求", {
+  url: webhookUrl.replace(/\/[^/]+$/, "/***"), // 隱藏敏感信息
+  method: "POST"
+});
+```
+
+## 性能優化
+
+### 1. 異步處理
+- 使用 `async/await` 而不是 Promise 鏈
+- 並行處理獨立的異步操作
+- 適當設置超時機制
+
+### 2. 內存管理  
+- 及時清理大型對象
+- 避免內存洩漏
+- 在 `teardown()` 中釋放資源
+
+### 3. 網絡請求優化
+```typescript
+// ✅ 帶超時的請求
+const controller = new AbortController();
+const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+try {
+  const response = await fetch(url, {
+    method: "POST",
+    signal: controller.signal,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+} finally {
+  clearTimeout(timeoutId);
+}
+```
+
+## 常見問題和解決方案
+
+### 1. SDK 導入問題
+```typescript
+// ✅ 正確的導入方式
+// @ts-ignore - SDK 在構建時可用
+import { ActionNode } from "@choiceform/automation-sdk";
+
+// ❌ 錯誤的導入
+import { ActionNode } from "@choiceform/automation-sdk"; // 會導致構建錯誤
+```
+
+### 2. 類型定義問題
+```typescript
+// ✅ 正確的類型定義
+interface MyPluginInputs {
+  webhookUrl?: string;
+  content?: string;
+  options?: {
+    timeout?: number;
+    retries?: number;
+  };
+}
+
+// ❌ 使用 any 類型
+interface MyPluginInputs {
+  webhookUrl: any; // 禁止使用 any
+  content: any;    // 禁止使用 any
+}
+```
+
+### 3. 測試覆蓋率問題
+- 確保測試所有分支邏輯
+- Mock 外部依賴
+- 測試錯誤場景
+- 使用 `pnpm test --coverage` 檢查覆蓋率
+
+### 4. 構建問題
+```bash
+# 清理並重新構建
+pnpm clean
+pnpm build
+
+# 驗證插件配置
+pnpm validate
+```
+
+## 安全注意事項
+
+### 1. 敏感信息處理
+- 永遠不要在日誌中記錄完整的 API 密鑰
+- 使用 `***` 或類似方式隱藏敏感信息
+- 在錯誤消息中避免洩露敏感數據
+
+### 2. 輸入清理
+- 驗證所有外部輸入
+- 防止注入攻擊
+- 限制輸入大小和格式
+
+### 3. 權限控制
+- 只請求必要的權限
+- 驗證 API 響應
+- 處理權限被拒絕的情況
+
+## 部署清單
+
+發布前檢查清單：
+- [ ] 代碼通過所有測試（覆蓋率 > 90%）
+- [ ] ESLint 檢查通過（0 錯誤）
+- [ ] TypeScript 編譯成功
+- [ ] 插件驗證通過 (`pnpm validate`)
+- [ ] README 文檔完整
+- [ ] 版本號正確更新
+- [ ] CHANGELOG 已更新
+
+參考 [tools/discord/](mdc:tools/discord) 查看完整的最佳實踐實現。
