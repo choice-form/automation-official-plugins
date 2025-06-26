@@ -174,25 +174,97 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Generate Plugin Registry
-        run: |
-          mkdir -p registry
-          
-          # 生成插件注册表
-          echo "Generating plugin registry..."
-          
-          cat > registry/registry.json << 'EOF'
-          {
-            "version": "1.0.0",
-            "generated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "repository": "automation-official-plugins",
-            "plugins": {
-              "extensions": [],
-              "models": [],
-              "tools": []
-            }
-          }
-          EOF
+             - name: Generate Plugin Registry
+         run: |
+           mkdir -p registry
+           
+           # 生成插件注册表
+           echo "Generating official plugin registry..."
+           
+           # 创建注册表生成脚本
+           cat > generate-registry.js << 'EOF'
+           const fs = require('fs');
+           const path = require('path');
+           
+           const registry = {
+             version: "1.0.0",
+             generated: new Date().toISOString(),
+             repository: "automation-official-plugins",
+             plugins: {
+               official: [],
+               community: [] // 为了兼容性，保持空数组
+             }
+           };
+           
+           // 扫描所有插件目录
+           const categories = ['extensions', 'models', 'tools'];
+           
+           for (const category of categories) {
+             if (fs.existsSync(category)) {
+               const pluginDirs = fs.readdirSync(category, { withFileTypes: true })
+                 .filter(dirent => dirent.isDirectory())
+                 .map(dirent => dirent.name);
+               
+               for (const pluginDir of pluginDirs) {
+                 const pluginPath = path.join(category, pluginDir);
+                 const packageJsonPath = path.join(pluginPath, 'package.json');
+                 const manifestPath = path.join(pluginPath, 'plugin.manifest.json');
+                 
+                 if (fs.existsSync(packageJsonPath) && fs.existsSync(manifestPath)) {
+                   try {
+                     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+                     const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+                     
+                     const pluginId = `${category}/${pluginDir}`;
+                     const version = packageJson.version;
+                     const downloadUrl = `https://github.com/choiceform/automation-official-plugins/releases/download/${pluginId}-v${version}/${pluginId.replace('/', '-')}-${version}.choiceformpkg`;
+                     
+                     const pluginInfo = {
+                       id: pluginId,
+                       name: manifest.displayName || packageJson.name,
+                       description: packageJson.description || manifest.description || "",
+                       version: version,
+                       category: manifest.category || category.slice(0, -1), // tools -> tool
+                       author: {
+                         name: typeof packageJson.author === 'string' ? packageJson.author : packageJson.author?.name || "ChoiceForm Team",
+                         email: typeof packageJson.author === 'object' ? packageJson.author.email : "team@choiceform.com"
+                       },
+                       repository: `https://github.com/choiceform/automation-official-plugins/tree/main/${pluginId}`,
+                       downloadUrl: downloadUrl,
+                       manifest: {
+                         displayName: manifest.displayName,
+                         sdkVersion: manifest.sdkVersion,
+                         inputs: manifest.inputs || [],
+                         outputs: manifest.outputs || []
+                       },
+                       compatibility: {
+                         automationVersion: manifest.engines?.automation || ">=2.0.0",
+                         sdkVersion: manifest.sdkVersion || "^1.0.0"
+                       },
+                       publishedAt: new Date().toISOString(),
+                       updatedAt: new Date().toISOString()
+                     };
+                     
+                     registry.plugins.official.push(pluginInfo);
+                     console.log(`✅ Added official plugin: ${pluginId}`);
+                   } catch (error) {
+                     console.error(`❌ Error processing plugin ${pluginPath}:`, error.message);
+                   }
+                 }
+               }
+             }
+           }
+           
+           // 按名称排序
+           registry.plugins.official.sort((a, b) => a.name.localeCompare(b.name));
+           
+           // 写入注册表文件
+           fs.writeFileSync('registry/registry.json', JSON.stringify(registry, null, 2));
+           console.log(`📦 Generated official registry with ${registry.plugins.official.length} plugins`);
+           EOF
+           
+           # 运行注册表生成脚本
+           node generate-registry.js
           
           # 扫描每个插件类型
           for category in extensions models tools; do
