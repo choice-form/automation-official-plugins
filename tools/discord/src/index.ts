@@ -52,17 +52,12 @@ interface DiscordInputs {
  * Send messages to Discord channels using webhooks with random bot usernames and avatars
  */
 export class Discord extends ActionNode {
-  private logger = {
-    info: (message: string) => console.log(`[Discord Plugin] ${message}`),
-    error: (message: string) => console.error(`[Discord Plugin] ${message}`),
-  };
-
   async setup(): Promise<void> {
-    this.logger.info("Setting up Discord plugin...");
+    console.log("[Discord Plugin] Setting up Discord plugin...");
   }
 
   async teardown(): Promise<void> {
-    this.logger.info("Tearing down Discord plugin...");
+    console.log("[Discord Plugin] Tearing down Discord plugin...");
   }
 
   getManifest(): PluginManifest {
@@ -265,7 +260,6 @@ export class Discord extends ActionNode {
       return {
         success: true,
         data: result,
-        outputPort: "success",
       };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "未知错误";
@@ -283,7 +277,6 @@ export class Discord extends ActionNode {
           error: errorMessage,
           timestamp: new Date().toISOString(),
         },
-        outputPort: "error",
       };
     }
   }
