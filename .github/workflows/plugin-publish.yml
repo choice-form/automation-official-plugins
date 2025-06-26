@@ -126,11 +126,18 @@ jobs:
             echo "Created package: ${PACKAGE_NAME}"
           fi
 
+      - name: Check Created Files
+        run: |
+          echo "Files in current directory:"
+          ls -la
+          echo "Files in ../dist directory:"
+          ls -la ../dist/ || echo "No ../dist directory"
+
       - name: Upload Plugin Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: plugin-${{ matrix.plugin }}
-          path: dist/
+          path: ../dist/
           retention-days: 30
 
   create-release:
@@ -329,8 +336,7 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
-        continue-on-error: true
+        uses: actions/deploy-pages@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
