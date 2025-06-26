@@ -149,10 +149,16 @@ jobs:
           echo "Files in plugin directory:"
           ls -la ${{ matrix.plugin }}/*.choiceformpkg || echo "No .choiceformpkg files in ${{ matrix.plugin }}"
 
+      - name: Generate Artifact Name
+        id: artifact-name
+        run: |
+          SAFE_NAME=$(echo "${{ matrix.plugin }}" | sed 's/\//-/g')
+          echo "name=plugin-${SAFE_NAME}" >> $GITHUB_OUTPUT
+
       - name: Upload Plugin Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: plugin-${{ matrix.plugin }}
+          name: ${{ steps.artifact-name.outputs.name }}
           path: "${{ matrix.plugin }}/*.choiceformpkg"
           retention-days: 30
 
