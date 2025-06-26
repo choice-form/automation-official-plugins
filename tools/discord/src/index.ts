@@ -1,141 +1,286 @@
-import { ActionNode } from '@choiceform/automation-sdk'
-import type { PluginExecutionContext, ExecutionResult, PluginManifest, PortConfig } from '@choiceform/automation-sdk'
+// @ts-ignore - SDK 在构建时可用
+import { ActionNode } from "@choiceform/automation-sdk";
+// @ts-ignore - SDK 在构建时可用
+import type {
+  PluginExecutionContext,
+  ExecutionResult,
+  PluginManifest,
+  PortConfig,
+} from "@choiceform/automation-sdk";
+
+// Discord随机用户名和头像
+const BOT_NAMES = [
+  "AutoBot",
+  "FlowBot",
+  "TaskBot",
+  "WorkBot",
+  "ChatBot",
+  "HelpBot",
+  "InfoBot",
+  "NewsBot",
+  "AlertBot",
+  "NotifyBot",
+  "UpdateBot",
+  "SyncBot",
+];
+
+const BOT_AVATARS = [
+  "https://cdn.discordapp.com/embed/avatars/0.png",
+  "https://cdn.discordapp.com/embed/avatars/1.png",
+  "https://cdn.discordapp.com/embed/avatars/2.png",
+  "https://cdn.discordapp.com/embed/avatars/3.png",
+  "https://cdn.discordapp.com/embed/avatars/4.png",
+  "https://cdn.discordapp.com/embed/avatars/5.png",
+];
+
+interface DiscordInputs {
+  webhookUrl?: string;
+  content?: string;
+  username?: string;
+  avatarUrl?: string;
+  embeds?: Array<{
+    title?: string;
+    description?: string;
+    color?: number;
+    url?: string;
+  }>;
+}
 
 /**
  * Discord Plugin
- * 
- * Discord is a communication platform designed for communities. It offers features like text and voice channels, direct messaging, and server-based organization. In Dify, Discord tools allow users to create a random bot with random username and avatar to send messages.
- * 
- * Domain: Messaging, chat, and communication platforms
- * Type: action
+ *
+ * Send messages to Discord channels using webhooks with random bot usernames and avatars
  */
 export class Discord extends ActionNode {
   async setup(): Promise<void> {
-    this.logger?.info('Setting up Discord...')
-    // 初始化逻辑
+    console.log("[Discord Plugin] Setting up Discord plugin...");
   }
 
   async teardown(): Promise<void> {
-    this.logger?.info('Tearing down Discord...')
-    // 清理逻辑
+    console.log("[Discord Plugin] Tearing down Discord plugin...");
   }
 
   getManifest(): PluginManifest {
     return {
-      name: '@choiceform/discord',
-      version: '1.0.0',
-      description: 'Discord is a communication platform designed for communities. It offers features like text and voice channels, direct messaging, and server-based organization. In Dify, Discord tools allow users to create a random bot with random username and avatar to send messages.',
-      author: 'wester',
-      nodeType: '@choiceform/discord.action',
-      automationNodeType: 'action.discord',
-      displayName: 'Discord',
-      category: 'action',
-      domain: 'communication',
-      subCategory: 'communication',
-      icon: 'icon.svg',
-      tags: ['discord', 'action', 'communication', 'automation'],
-      isPopular: false,
-      sdkVersion: '^1.0.0',
+      name: "@choiceform/discord",
+      version: "1.0.0",
+      description:
+        "Send messages to Discord channels using webhooks with customizable bot usernames and avatars",
+      author: "ChoiceForm Team",
+      nodeType: "@choiceform/discord.action",
+      automationNodeType: "action.discord",
+      displayName: "Discord",
+      category: "action",
+      domain: "communication",
+      subCategory: "messaging",
+      icon: "icon.svg",
+      tags: [
+        "discord",
+        "messaging",
+        "webhook",
+        "notification",
+        "communication",
+      ],
+      isPopular: true,
+      sdkVersion: "^1.0.0",
       automationConfigs: {
         registry: {
-          type: 'action.discord',
-          name: 'Discord',
-          description: 'Discord is a communication platform designed for communities. It offers features like text and voice channels, direct messaging, and server-based organization. In Dify, Discord tools allow users to create a random bot with random username and avatar to send messages.',
-          categoryId: 'action',
-          subCategoryId: 'communication',
-          icon: 'icon.svg',
-          tags: ['discord', 'action', 'communication', 'automation'],
-          isPopular: false
+          type: "action.discord",
+          name: "Discord",
+          description: "Send messages to Discord channels",
+          categoryId: "action",
+          subCategoryId: "communication",
+          icon: "icon.svg",
+          tags: ["discord", "messaging", "webhook", "notification"],
+          isPopular: true,
         },
         ports: {
           ports: [
             {
-              id: 'input',
-              type: 'input',
-              label: 'Input',
-              allowMultiple: false
+              id: "input",
+              type: "input",
+              label: "Input",
+              allowMultiple: false,
             },
             {
-              id: 'output',
-              type: 'output',
-              label: 'Response',
-              allowMultiple: true
-            }
-          ]
+              id: "success",
+              type: "output",
+              label: "Success",
+              allowMultiple: true,
+            },
+            {
+              id: "error",
+              type: "output",
+              label: "Error",
+              allowMultiple: true,
+            },
+          ],
         },
         toolbar: {
-          position: 'top',
-          buttons: ['run', 'delete', 'activate', 'more'],
-          showContent: true
+          position: "top",
+          buttons: ["run", "delete", "activate", "more"],
+          showContent: true,
         },
         layout: {
-          width: 180,
-          minHeight: 100,
-          showContent: true
-        }
+          width: 200,
+          minHeight: 120,
+          showContent: true,
+        },
       },
       metadata: {
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-    }
+        updatedAt: new Date().toISOString(),
+      },
+    };
   }
 
   getPortConfig(): PortConfig {
     return {
       ports: [
         {
-          id: 'input',
-          type: 'input',
-          label: 'Input',
-          allowMultiple: false
+          id: "input",
+          type: "input",
+          label: "Input",
+          allowMultiple: false,
         },
         {
-          id: 'output',
-          type: 'output', 
-          label: 'Response',
-          allowMultiple: true
-        }
-      ]
-    }
+          id: "success",
+          type: "output",
+          label: "Success",
+          allowMultiple: true,
+        },
+        {
+          id: "error",
+          type: "output",
+          label: "Error",
+          allowMultiple: true,
+        },
+      ],
+    };
   }
 
-  async execute(inputs: Record<string, unknown>, context: PluginExecutionContext): Promise<ExecutionResult> {
+  private getRandomBotName(): string {
+    return BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
+  }
+
+  private getRandomBotAvatar(): string {
+    return BOT_AVATARS[Math.floor(Math.random() * BOT_AVATARS.length)];
+  }
+
+  private async sendDiscordMessage(
+    webhookUrl: string,
+    payload: Record<string, any>
+  ): Promise<any> {
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Discord API error: ${response.status} ${response.statusText} - ${errorText}`
+      );
+    }
+
+    return response;
+  }
+
+  async execute(
+    inputs: Record<string, unknown>,
+    context: PluginExecutionContext
+  ): Promise<ExecutionResult> {
     try {
-      context.log('info', 'Discord executed', inputs)
-      
-      // 你的业务逻辑
-      const result = {
-        timestamp: new Date().toISOString(),
-        processed: true,
-        data: inputs,
-        nodeId: context.nodeId,
-        workflowId: context.workflowId,
-        domain: 'communication',
-        category: 'action'
+      const discordInputs = inputs as DiscordInputs;
+      const { webhookUrl, content, username, avatarUrl, embeds } =
+        discordInputs;
+
+      // 验证必需参数
+      if (!webhookUrl) {
+        throw new Error("Webhook URL is required");
       }
+
+      if (!content && (!embeds || embeds.length === 0)) {
+        throw new Error("Either content or embeds must be provided");
+      }
+
+      // 验证 webhook URL 格式
+      if (!webhookUrl.includes("discord.com/api/webhooks/")) {
+        throw new Error("Invalid Discord webhook URL format");
+      }
+
+      context.log("info", "Sending message to Discord", {
+        webhookUrl: webhookUrl.replace(/\/[^/]+$/, "/***"), // 隐藏token
+        hasContent: !!content,
+        hasEmbeds: !!(embeds && embeds.length > 0),
+      });
+
+      // 构造消息负载
+      const payload: Record<string, any> = {};
+
+      // 设置内容
+      if (content) {
+        payload.content = content;
+      }
+
+      // 设置用户名和头像（随机或指定）
+      payload.username = username || this.getRandomBotName();
+      payload.avatar_url = avatarUrl || this.getRandomBotAvatar();
+
+      // 设置嵌入内容
+      if (embeds && embeds.length > 0) {
+        payload.embeds = embeds.map((embed) => ({
+          ...embed,
+          timestamp: new Date().toISOString(),
+        }));
+      }
+
+      // 发送消息
+      const response = await this.sendDiscordMessage(webhookUrl, payload);
+
+      const result = {
+        success: true,
+        messageId: response.headers?.get
+          ? response.headers.get("x-message-id")
+          : null,
+        timestamp: new Date().toISOString(),
+        botName: payload.username,
+        botAvatar: payload.avatar_url,
+        sent: {
+          content: payload.content,
+          embeds: payload.embeds,
+        },
+      };
+
+      context.log("info", "Discord message sent successfully", result);
 
       return {
         success: true,
-        data: result
-      }
+        data: result,
+      };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : '未知错误'
-      
-      // 确保 log 调用也在 try-catch 中，避免二次错误
+      const errorMessage = error instanceof Error ? error.message : "未知错误";
+
       try {
-        context.log('error', 'Plugin execution failed', { error: errorMessage })
+        context.log("error", "Discord message failed", { error: errorMessage });
       } catch (logError) {
-        // 如果 log 本身出错，忽略它
+        // 忽略日志错误
       }
-      
+
       return {
         success: false,
-        error: errorMessage
-      }
+        error: errorMessage,
+        data: {
+          error: errorMessage,
+          timestamp: new Date().toISOString(),
+        },
+      };
     }
   }
 }
 
 // 导出插件实例
-export default new Discord()
+export default new Discord();
