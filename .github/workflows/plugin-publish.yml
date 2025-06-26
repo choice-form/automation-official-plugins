@@ -1,0 +1,280 @@
+name: Plugin Auto Publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  detect-changes:
+    name: Detect Plugin Changes
+    runs-on: ubuntu-latest
+    outputs:
+      plugins: ${{ steps.changes.outputs.plugins }}
+      has_plugins: ${{ steps.changes.outputs.has_plugins }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect Changed Plugins
+        id: changes
+        run: |
+          # 获取最近的提交中变更的插件
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            # 手动触发时，发布所有插件
+            PLUGINS=$(find extensions models tools -maxdepth 1 -mindepth 1 -type d | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          else
+            # 自动触发时，只发布有变更的插件
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+            PLUGINS=$(echo "$CHANGED_FILES" | grep -E '^(extensions|models|tools)/[^/]+/' | cut -d'/' -f1-2 | sort -u | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          fi
+          
+          echo "Plugins to publish: $PLUGINS"
+          echo "plugins=$PLUGINS" >> $GITHUB_OUTPUT
+          
+          if [[ "$PLUGINS" != "[]" ]]; then
+            echo "has_plugins=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_plugins=false" >> $GITHUB_OUTPUT
+          fi
+
+  build-plugins:
+    name: Build Plugin Packages
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_plugins == 'true'
+    strategy:
+      matrix:
+        plugin: ${{ fromJson(needs.detect-changes.outputs.plugins) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies
+        run: |
+          cd ${{ matrix.plugin }}
+          npm install
+
+      - name: Install Plugin SDK
+        run: |
+          cd ${{ matrix.plugin }}
+          npm install @choiceform/automation-sdk@latest
+
+      - name: Build Plugin
+        run: |
+          cd ${{ matrix.plugin }}
+          npm run build
+
+      - name: Package Plugin
+        run: |
+          cd ${{ matrix.plugin }}
+          npx @choiceform/automation-sdk build
+          
+          # 读取插件信息
+          PLUGIN_NAME=$(node -p "require('./package.json').name")
+          PLUGIN_VERSION=$(node -p "require('./package.json').version")
+          
+          # 创建发布包
+          mkdir -p ../dist
+          cp *.choiceformpkg ../dist/ || echo "No .choiceformpkg files found"
+
+      - name: Upload Plugin Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-${{ matrix.plugin }}
+          path: dist/
+          retention-days: 30
+
+  create-release:
+    name: Create Plugin Release
+    runs-on: ubuntu-latest
+    needs: [detect-changes, build-plugins]
+    if: needs.detect-changes.outputs.has_plugins == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts/
+
+      - name: Generate Release Notes
+        id: release-notes
+        run: |
+          PLUGINS='${{ needs.detect-changes.outputs.plugins }}'
+          
+          # 生成发布说明
+          echo "## 🚀 Official Plugins Release $(date +'%Y-%m-%d')" > release-notes.md
+          echo "" >> release-notes.md
+          echo "### 📦 Updated Plugins" >> release-notes.md
+          echo "" >> release-notes.md
+          
+          for plugin in $(echo $PLUGINS | jq -r '.[]'); do
+            if [[ -d "$plugin" ]]; then
+              PLUGIN_NAME=$(node -p "require('./$plugin/package.json').name" 2>/dev/null || echo "$plugin")
+              PLUGIN_VERSION=$(node -p "require('./$plugin/package.json').version" 2>/dev/null || echo "unknown")
+              PLUGIN_DESC=$(node -p "require('./$plugin/package.json').description" 2>/dev/null || echo "")
+              
+              echo "#### $PLUGIN_NAME v$PLUGIN_VERSION" >> release-notes.md
+              echo "$PLUGIN_DESC" >> release-notes.md
+              echo "" >> release-notes.md
+            fi
+          done
+          
+          echo "### 📥 Installation" >> release-notes.md
+          echo "" >> release-notes.md
+          echo "官方插件可通过以下方式安装：" >> release-notes.md
+          echo "" >> release-notes.md
+          echo "1. **自动安装**：在 ChoiceForm Automation 插件市场中搜索并安装" >> release-notes.md
+          echo "2. **手动安装**：下载 .choiceformpkg 文件并导入" >> release-notes.md
+          echo "3. **SDK 安装**：使用 \`@choiceform/automation-sdk\` 命令行工具" >> release-notes.md
+          echo "" >> release-notes.md
+          
+          # 设置输出
+          echo "RELEASE_TAG=v$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.release-notes.outputs.RELEASE_TAG }}
+          name: Official Plugins Release ${{ steps.release-notes.outputs.RELEASE_TAG }}
+          body_path: release-notes.md
+          files: release-artifacts/**/*.choiceformpkg
+          draft: false
+          prerelease: false
+
+  update-registry:
+    name: Update Plugin Registry
+    runs-on: ubuntu-latest
+    needs: [detect-changes, build-plugins, create-release]
+    if: needs.detect-changes.outputs.has_plugins == 'true'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate Plugin Registry
+        run: |
+          mkdir -p registry
+          
+          # 生成插件注册表
+          echo "Generating plugin registry..."
+          
+          cat > registry/registry.json << 'EOF'
+          {
+            "version": "1.0.0",
+            "generated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "repository": "automation-official-plugins",
+            "plugins": {
+              "extensions": [],
+              "models": [],
+              "tools": []
+            }
+          }
+          EOF
+          
+          # 扫描每个插件类型
+          for category in extensions models tools; do
+            if [[ -d "$category" ]]; then
+              for plugin_dir in $category/*/; do
+                if [[ -f "$plugin_dir/package.json" ]]; then
+                  echo "Processing $plugin_dir..."
+                  
+                  # 读取插件信息
+                  PLUGIN_NAME=$(node -p "require('./$plugin_dir/package.json').name" 2>/dev/null || echo "")
+                  PLUGIN_VERSION=$(node -p "require('./$plugin_dir/package.json').version" 2>/dev/null || echo "1.0.0")
+                  PLUGIN_DESC=$(node -p "require('./$plugin_dir/package.json').description" 2>/dev/null || echo "")
+                  PLUGIN_AUTHOR=$(node -p "require('./$plugin_dir/package.json').author" 2>/dev/null || echo "ChoiceForm")
+                  
+                  if [[ ! -z "$PLUGIN_NAME" ]]; then
+                    # 添加到注册表
+                    PLUGIN_ENTRY=$(cat << EOF
+          {
+            "name": "$PLUGIN_NAME",
+            "version": "$PLUGIN_VERSION", 
+            "description": "$PLUGIN_DESC",
+            "author": "$PLUGIN_AUTHOR",
+            "category": "$category",
+            "download_url": "https://github.com/choiceform/automation-official-plugins/releases/latest/download/${PLUGIN_NAME}-${PLUGIN_VERSION}.choiceformpkg",
+            "repository_url": "https://github.com/choiceform/automation-official-plugins/tree/main/$plugin_dir",
+            "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+          )
+                    echo "Added $PLUGIN_NAME to registry"
+                  fi
+                fi
+              done
+            fi
+          done
+          
+          # 生成简单的 HTML 页面
+          cat > registry/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>ChoiceForm Official Plugins Registry</title>
+            <style>
+              body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+              .plugin { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; }
+              .category { margin: 20px 0; }
+              .category h2 { color: #333; border-bottom: 2px solid #007cba; padding-bottom: 5px; }
+            </style>
+          </head>
+          <body>
+            <h1>🔌 ChoiceForm Official Plugins</h1>
+            <p>官方维护的高质量插件集合</p>
+            
+            <div class="category">
+              <h2>🔧 Extensions (扩展插件)</h2>
+              <p>轻量级 HTTP 端点功能</p>
+            </div>
+            
+            <div class="category">
+              <h2>🤖 Models (模型插件)</h2>
+              <p>AI 模型集成</p>
+            </div>
+            
+            <div class="category">  
+              <h2>🛠️ Tools (工具插件)</h2>
+              <p>第三方服务集成</p>
+            </div>
+            
+            <hr>
+            <p><small>Generated: $(date)</small></p>
+          </body>
+          </html>
+          EOF
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: registry/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v3 
