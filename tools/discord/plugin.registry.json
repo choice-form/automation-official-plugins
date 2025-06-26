@@ -1,0 +1,30 @@
+{
+  "name": "@choiceform/discord",
+  "version": "1.0.0",
+  "author": "wester",
+  "submittedAt": "2025-06-26T04:19:03.035Z",
+  "category": "action",
+  "domain": "communication",
+  "security": {
+    "level": "standard",
+    "permissions": [
+      "network",
+      "data"
+    ],
+    "sandbox": true,
+    "description": "Plugin for messaging, chat, and communication platforms"
+  },
+  "testing": {
+    "coverage": 0,
+    "testFiles": [
+      "tests/**/*.test.ts"
+    ],
+    "integrationTests": false,
+    "performanceTests": false
+  },
+  "compatibility": {
+    "sdkVersion": "^1.0.0",
+    "nodeVersion": ">=18.0.0",
+    "platformVersion": ">=1.0.0"
+  }
+}
