@@ -72,7 +72,7 @@ jobs:
       - name: Install Plugin SDK
         run: |
           cd ${{ matrix.plugin }}
-          npm install @choiceform/automation-sdk@latest
+          npm install @choiceform/automation-sdk@^1.3.0
 
       - name: Build Plugin
         run: |
@@ -82,66 +82,19 @@ jobs:
       - name: Package Plugin
         run: |
           cd ${{ matrix.plugin }}
+          
+          echo "🔨 Building plugin package with SDK v1.3.0+..."
           npx @choiceform/automation-sdk build
-
-          # 读取插件信息
-          PLUGIN_NAME=$(node -p "require('./package.json').name")
-          PLUGIN_VERSION=$(node -p "require('./package.json').version")
-
-          # 查找 .choiceformpkg 文件
+          
+          # 验证包文件创建成功
           if ls *.choiceformpkg 1> /dev/null 2>&1; then
-            echo "Found .choiceformpkg files"
-            echo "SDK已经生成了包文件"
+            echo "✅ Package created successfully"
+            for pkg in *.choiceformpkg; do
+              echo "📦 Package: $pkg ($(ls -lh "$pkg" | awk '{print $5}'))"
+            done
           else
-            echo "No .choiceformpkg files found, creating package manually..."
-            
-            # 创建临时包目录
-            mkdir -p temp_package
-            
-            # 复制编译后的文件和配置
-            if [ -d "dist" ]; then
-              echo "Copying dist files..."
-              cp -r dist/* temp_package/
-            else
-              echo "No dist directory found"
-            fi
-            
-            # 复制必要文件
-            [ -f "package.json" ] && cp package.json temp_package/ && echo "Copied package.json"
-            [ -f "plugin.manifest.json" ] && cp plugin.manifest.json temp_package/ && echo "Copied manifest"
-            [ -f "plugin.registry.json" ] && cp plugin.registry.json temp_package/ && echo "Copied registry"
-            [ -f "README.md" ] && cp README.md temp_package/ && echo "Copied README"
-            [ -f "icon.svg" ] && cp icon.svg temp_package/ && echo "Copied icon"
-            
-            # 如果没有编译后的文件，复制源文件
-            if [ ! -d "dist" ] && [ -d "src" ]; then
-              echo "No dist found, copying src files..."
-              cp -r src temp_package/
-            fi
-            
-            # 创建包文件（使用安全的文件名）
-            SAFE_NAME=$(echo "$PLUGIN_NAME" | sed 's/[@\/]/-/g' | sed 's/^-//' | sed 's/-$//')
-            PACKAGE_NAME="${SAFE_NAME}-${PLUGIN_VERSION}.choiceformpkg"
-            
-            # 检查临时目录内容
-            echo "Contents of temp_package:"
-            ls -la temp_package/
-            
-            cd temp_package
-            tar -czf "../${PACKAGE_NAME}" .
-            cd ..
-            
-            # 验证包文件创建成功
-            if [ -f "${PACKAGE_NAME}" ]; then
-              echo "✅ Package created successfully: ${PACKAGE_NAME}"
-              echo "Package size: $(ls -lh ${PACKAGE_NAME} | awk '{print $5}')"
-            else
-              echo "❌ Failed to create package: ${PACKAGE_NAME}"
-              exit 1
-            fi
-            
-            # 清理临时文件
-            rm -rf temp_package
+            echo "❌ No .choiceformpkg files found"
+            exit 1
           fi
 
       - name: Check Created Files

@@ -5,6 +5,22 @@ All notable changes to this Discord plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8] - 2024-12-24
+
+### Changed
+
+- 🚀 **Major Infrastructure Upgrade**: Updated to use @choiceform/automation-sdk v1.3.0
+- ✨ **Native Package Creation**: Now uses SDK's built-in .choiceformpkg creation feature
+- 🔧 **Simplified CI/CD**: Removed manual package creation logic from GitHub Actions
+- 📦 **Improved Build Process**: More reliable and standardized plugin packaging
+
+### Technical
+
+- Updated GitHub Actions workflow to use official SDK build command
+- Removed 50+ lines of manual tar/gzip packaging code
+- Enhanced error handling and package validation
+- Standardized with automation-plugin-sdk best practices
+
 ## [1.0.7] - 2024-12-24
 
 ### Fixed
