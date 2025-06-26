@@ -5,6 +5,20 @@ All notable changes to this Discord plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2024-12-24
+
+### Fixed
+
+- Fixed GitHub Actions artifacts upload path issues completely
+- Enhanced package creation logic with better error checking
+- Added detailed debugging information for troubleshooting
+- Improved file validation in packaging process
+
+### Build
+
+- Modified workflow to use correct plugin directory paths
+- Enhanced temporary package creation with validation
+
 ## [1.0.4] - 2024-06-26
 
 ### Fixed
