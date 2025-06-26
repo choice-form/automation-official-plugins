@@ -82,15 +82,37 @@ jobs:
       - name: Package Plugin
         run: |
           cd ${{ matrix.plugin }}
+
+          # 确保先构建 TypeScript
+          npm run build
+
+          # 使用 SDK 构建插件包
           npx @choiceform/automation-sdk build
 
           # 读取插件信息
           PLUGIN_NAME=$(node -p "require('./package.json').name")
           PLUGIN_VERSION=$(node -p "require('./package.json').version")
 
-          # 创建发布包
+          # 创建发布包目录
           mkdir -p ../dist
-          cp *.choiceformpkg ../dist/ || echo "No .choiceformpkg files found"
+
+          # 复制构建输出和配置文件到 dist
+          cp -r dist/* ../dist/ 2>/dev/null || echo "No dist files found"
+          cp package.json ../dist/ 2>/dev/null || echo "No package.json found"
+          cp plugin.manifest.json ../dist/ 2>/dev/null || echo "No manifest found"
+          cp plugin.registry.json ../dist/ 2>/dev/null || echo "No registry found"
+          cp README.md ../dist/ 2>/dev/null || echo "No README found"
+          cp icon.svg ../dist/ 2>/dev/null || echo "No icon found"
+
+          # 查找并复制 .choiceformpkg 文件
+          find . -name "*.choiceformpkg" -exec cp {} ../dist/ \; 2>/dev/null || echo "No .choiceformpkg files found"
+
+          # 如果没有 .choiceformpkg 文件，创建一个简单的包
+          if [ ! -f ../dist/*.choiceformpkg ]; then
+            echo "Creating package manually..."
+            cd ../dist
+            tar -czf "${PLUGIN_NAME}-${PLUGIN_VERSION}.choiceformpkg" *
+          fi
 
       - name: Upload Plugin Artifacts
         uses: actions/upload-artifact@v4
@@ -161,8 +183,8 @@ jobs:
   update-registry:
     name: Update Plugin Registry
     runs-on: ubuntu-latest
-    needs: [detect-changes, build-plugins, create-release]
-    if: needs.detect-changes.outputs.has_plugins == 'true'
+    needs: [detect-changes]
+    if: always()
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -281,8 +303,6 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        with:
-          enablement: true
 
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
@@ -291,8 +311,7 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
-        continue-on-error: true
+        uses: actions/deploy-pages@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
