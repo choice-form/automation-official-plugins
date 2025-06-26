@@ -120,7 +120,7 @@ jobs:
             fi
             
             # 创建包文件（使用安全的文件名）
-            SAFE_NAME=$(echo "$PLUGIN_NAME" | sed 's/[@\/]/-/g')
+            SAFE_NAME=$(echo "$PLUGIN_NAME" | sed 's/[@\/]/-/g' | sed 's/^-//' | sed 's/-$//')
             PACKAGE_NAME="${SAFE_NAME}-${PLUGIN_VERSION}.choiceformpkg"
             
             # 检查临时目录内容
@@ -276,7 +276,7 @@ jobs:
                   
                   if [[ ! -z "$PLUGIN_NAME" ]]; then
                     # 创建安全的文件名（替换特殊字符）
-                    SAFE_NAME=$(echo "$PLUGIN_NAME" | sed 's/[@\/]/-/g')
+                    SAFE_NAME=$(echo "$PLUGIN_NAME" | sed 's/[@\/]/-/g' | sed 's/^-//' | sed 's/-$//')
                     PACKAGE_NAME="${SAFE_NAME}-${PLUGIN_VERSION}.choiceformpkg"
                     
                     # 使用 jq 添加插件到对应分类

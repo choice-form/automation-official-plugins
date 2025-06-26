@@ -5,6 +5,19 @@ All notable changes to this Discord plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.7] - 2024-12-24
+
+### Fixed
+
+- Fixed package filename generation - removed leading dash from plugin names
+- Corrected .choiceformpkg download URLs in registry and GitHub releases
+- Package files now have clean names: `choiceform-discord-1.0.7.choiceformpkg` instead of `-choiceform-discord-1.0.7.choiceformpkg`
+
+### Build
+
+- Enhanced SAFE_NAME processing to strip leading/trailing dashes
+- Improved filename sanitization for cross-platform compatibility
+
 ## [1.0.6] - 2024-12-24
 
 ### Fixed
