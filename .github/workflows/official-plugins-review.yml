@@ -26,15 +26,15 @@ jobs:
       - name: Detect Changed Plugins
         id: changes
         run: |
-          # 获取变更的文件
-          CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-          
+          # 获取变更的文件并去除前导空格
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD | sed 's/^[[:space:]]*//')
+
           # 提取插件目录 (extensions/plugin-name, models/plugin-name, tools/plugin-name)
           PLUGINS=$(echo "$CHANGED_FILES" | grep -E '^(extensions|models|tools)/[^/]+/' | cut -d'/' -f1-2 | sort -u | jq -R -s -c 'split("\n") | map(select(length > 0))')
-          
+
           echo "Changed plugins: $PLUGINS"
           echo "plugins=$PLUGINS" >> $GITHUB_OUTPUT
-          
+
           if [[ "$PLUGINS" != "[]" ]]; then
             echo "has_plugins=true" >> $GITHUB_OUTPUT
           else
@@ -58,8 +58,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install Dependencies
         run: |
@@ -75,7 +75,7 @@ jobs:
         run: |
           PLUGIN_DIR="${{ matrix.plugin }}"
           echo "🔍 官方插件严格验证: $PLUGIN_DIR"
-          
+
           # 检查必需文件
           REQUIRED_FILES=(
             "package.json"
@@ -86,14 +86,14 @@ jobs:
             "tests/"
             "tsconfig.json"
           )
-          
+
           for file in "${REQUIRED_FILES[@]}"; do
             if [[ ! -e "$PLUGIN_DIR/$file" ]]; then
               echo "❌ 缺少必需文件: $file"
               exit 1
             fi
           done
-          
+
           echo "✅ 文件结构检查通过"
 
       - name: TypeScript Compilation
@@ -113,7 +113,7 @@ jobs:
         run: |
           cd ${{ matrix.plugin }}
           npm test || echo "⚠️ 建议添加完整测试"
-          
+
           # 检查测试覆盖率
           npm run test:coverage || echo "⚠️ 建议添加测试覆盖率检查"
 
@@ -122,7 +122,7 @@ jobs:
           cd ${{ matrix.plugin }}
           # 高级别安全扫描
           npm audit --audit-level=high || echo "⚠️ 发现安全问题，需要修复"
-          
+
           # 检查危险依赖
           if grep -r "eval\|Function\|exec\|spawn" src/; then
             echo "⚠️ 发现潜在危险函数，需要人工审核"
@@ -136,18 +136,18 @@ jobs:
       - name: Documentation Quality Check
         run: |
           PLUGIN_DIR="${{ matrix.plugin }}"
-          
+
           # 检查 README 完整性
           if ! grep -q "## 功能特性\|## Features" "$PLUGIN_DIR/README.md"; then
             echo "❌ README.md 缺少功能特性说明"
             exit 1
           fi
-          
+
           if ! grep -q "## 使用方法\|## Usage" "$PLUGIN_DIR/README.md"; then
             echo "❌ README.md 缺少使用方法说明"
             exit 1
           fi
-          
+
           echo "✅ 文档质量检查通过"
 
   official-review-summary:
@@ -162,10 +162,10 @@ jobs:
           script: |
             const plugins = ${{ needs.detect-changes.outputs.plugins }};
             const validationResult = '${{ needs.strict-validation.result }}';
-            
+
             let summary = `## 🏢 官方插件审核报告\n\n`;
             summary += `**审核插件**: ${plugins.join(', ')}\n\n`;
-            
+
             if (validationResult === 'success') {
               summary += `### ✅ 自动验证通过\n\n`;
               summary += `所有自动化检查已通过，已准备好进行人工审核。\n\n`;
@@ -173,7 +173,7 @@ jobs:
               summary += `### ❌ 自动验证失败\n\n`;
               summary += `请修复上述问题后重新提交。\n\n`;
             }
-            
+
             // 官方插件的严格清单
             summary += `### 📋 官方插件审核清单\n\n`;
             summary += `#### 🤖 自动化检查\n`;
@@ -182,7 +182,7 @@ jobs:
             summary += `- [${validationResult === 'success' ? 'x' : ' '}] 代码质量检查\n`;
             summary += `- [${validationResult === 'success' ? 'x' : ' '}] 安全审计\n`;
             summary += `- [${validationResult === 'success' ? 'x' : ' '}] 文档质量达标\n\n`;
-            
+
             summary += `#### 👤 人工审核 (核心团队负责)\n`;
             summary += `- [ ] 功能设计合理性审核\n`;
             summary += `- [ ] 代码架构和最佳实践审核\n`;
@@ -190,14 +190,14 @@ jobs:
             summary += `- [ ] 安全风险深度评估\n`;
             summary += `- [ ] 文档完整性和准确性审核\n`;
             summary += `- [ ] 长期维护计划确认\n\n`;
-            
+
             summary += `### 📚 官方插件标准\n\n`;
             summary += `作为官方插件，此插件将代表 ChoiceForm 的质量标准。\n\n`;
             summary += `插件类型说明:\n`;
             summary += `- **Extensions**: 轻量级 HTTP 端点功能\n`;
             summary += `- **Models**: AI 模型集成\n`;
             summary += `- **Tools**: 第三方服务集成\n\n`;
-            
+
             if (validationResult === 'success') {
               summary += `### ✅ 下一步\n\n`;
               summary += `自动化验证已通过，等待核心团队进行人工审核。\n`;
@@ -205,18 +205,18 @@ jobs:
               summary += `### ❌ 修复建议\n\n`;
               summary += `请查看上述失败的检查项，修复后重新提交。\n`;
             }
-            
+
             // 创建或更新评论
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            
+
             const botComment = comments.find(comment => 
               comment.user.type === 'Bot' && comment.body.includes('官方插件审核报告')
             );
-            
+
             if (botComment) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
@@ -231,4 +231,4 @@ jobs:
                 issue_number: context.issue.number,
                 body: summary
               });
-            } 
+            }
