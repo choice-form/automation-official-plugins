@@ -82,11 +82,6 @@ jobs:
       - name: Package Plugin
         run: |
           cd ${{ matrix.plugin }}
-
-          # 确保先构建 TypeScript
-          npm run build
-
-          # 使用 SDK 构建插件包
           npx @choiceform/automation-sdk build
 
           # 读取插件信息
@@ -96,22 +91,39 @@ jobs:
           # 创建发布包目录
           mkdir -p ../dist
 
-          # 复制构建输出和配置文件到 dist
-          cp -r dist/* ../dist/ 2>/dev/null || echo "No dist files found"
-          cp package.json ../dist/ 2>/dev/null || echo "No package.json found"
-          cp plugin.manifest.json ../dist/ 2>/dev/null || echo "No manifest found"
-          cp plugin.registry.json ../dist/ 2>/dev/null || echo "No registry found"
-          cp README.md ../dist/ 2>/dev/null || echo "No README found"
-          cp icon.svg ../dist/ 2>/dev/null || echo "No icon found"
-
-          # 查找并复制 .choiceformpkg 文件
-          find . -name "*.choiceformpkg" -exec cp {} ../dist/ \; 2>/dev/null || echo "No .choiceformpkg files found"
-
-          # 如果没有 .choiceformpkg 文件，创建一个简单的包
-          if [ ! -f ../dist/*.choiceformpkg ]; then
-            echo "Creating package manually..."
-            cd ../dist
-            tar -czf "${PLUGIN_NAME}-${PLUGIN_VERSION}.choiceformpkg" *
+          # 查找 .choiceformpkg 文件
+          if ls *.choiceformpkg 1> /dev/null 2>&1; then
+            echo "Found .choiceformpkg files"
+            cp *.choiceformpkg ../dist/
+          else
+            echo "No .choiceformpkg files found, creating package manually..."
+            
+            # 创建临时包目录
+            mkdir -p temp_package
+            
+            # 复制编译后的文件和配置
+            cp -r dist/* temp_package/ 2>/dev/null || echo "No dist files"
+            cp package.json temp_package/ 2>/dev/null || echo "No package.json"
+            cp plugin.manifest.json temp_package/ 2>/dev/null || echo "No manifest"
+            cp plugin.registry.json temp_package/ 2>/dev/null || echo "No registry"
+            cp README.md temp_package/ 2>/dev/null || echo "No README"
+            cp icon.svg temp_package/ 2>/dev/null || echo "No icon"
+            
+            # 创建包文件（使用安全的文件名）
+            SAFE_NAME=$(echo "$PLUGIN_NAME" | sed 's/[@\/]/-/g')
+            PACKAGE_NAME="${SAFE_NAME}-${PLUGIN_VERSION}.choiceformpkg"
+            
+            cd temp_package
+            tar -czf "../${PACKAGE_NAME}" .
+            cd ..
+            
+            # 复制到 dist 目录
+            cp "${PACKAGE_NAME}" ../dist/
+            
+            # 清理临时文件
+            rm -rf temp_package "${PACKAGE_NAME}"
+            
+            echo "Created package: ${PACKAGE_NAME}"
           fi
 
       - name: Upload Plugin Artifacts
@@ -183,8 +195,8 @@ jobs:
   update-registry:
     name: Update Plugin Registry
     runs-on: ubuntu-latest
-    needs: [detect-changes]
-    if: always()
+    needs: [detect-changes, build-plugins, create-release]
+    if: needs.detect-changes.outputs.has_plugins == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -234,6 +246,10 @@ jobs:
                   PLUGIN_AUTHOR=$(node -p "require('./$plugin_dir/package.json').author" 2>/dev/null || echo "ChoiceForm")
                   
                   if [[ ! -z "$PLUGIN_NAME" ]]; then
+                    # 创建安全的文件名（替换特殊字符）
+                    SAFE_NAME=$(echo "$PLUGIN_NAME" | sed 's/[@\/]/-/g')
+                    PACKAGE_NAME="${SAFE_NAME}-${PLUGIN_VERSION}.choiceformpkg"
+                    
                     # 使用 jq 添加插件到对应分类
                     PLUGIN_ENTRY=$(cat << EOF
           {
@@ -242,7 +258,7 @@ jobs:
             "description": "$PLUGIN_DESC",
             "author": "$PLUGIN_AUTHOR",
             "category": "$category",
-            "download_url": "https://github.com/choice-form/automation-official-plugins/releases/latest/download/${PLUGIN_NAME}-${PLUGIN_VERSION}.choiceformpkg",
+            "download_url": "https://github.com/choice-form/automation-official-plugins/releases/latest/download/${PACKAGE_NAME}",
             "repository_url": "https://github.com/choice-form/automation-official-plugins/tree/main/$plugin_dir",
             "updated_at": "$CURRENT_DATE"
           }
@@ -303,6 +319,8 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
+        with:
+          enablement: true
 
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
@@ -311,7 +329,8 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v3
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
