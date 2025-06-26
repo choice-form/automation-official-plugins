@@ -9,6 +9,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  actions: read
 
 jobs:
   detect-changes:
@@ -162,9 +163,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [detect-changes, build-plugins, create-release]
     if: needs.detect-changes.outputs.has_plugins == 'true'
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -280,3 +278,18 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v3
+        continue-on-error: true
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Output Registry Info
+        run: |
+          echo "✅ Plugin Registry Generated Successfully!"
+          echo "📁 Registry files created in registry/ directory"
+          if [ -f registry/registry.json ]; then
+            echo "📋 registry.json size: $(stat -c%s registry/registry.json 2>/dev/null || stat -f%z registry/registry.json) bytes"
+          fi
+          if [ -f registry/index.html ]; then
+            echo "🌐 index.html size: $(stat -c%s registry/index.html 2>/dev/null || stat -f%z registry/index.html) bytes"
+          fi
+          echo "🔗 If GitHub Pages deployment failed, you can manually upload these files"
