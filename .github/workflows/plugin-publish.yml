@@ -120,6 +120,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [detect-changes, build-plugins]
     if: needs.detect-changes.outputs.has_plugins == 'true'
+    outputs:
+      release_tag: ${{ steps.release-notes.outputs.RELEASE_TAG }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -264,7 +266,7 @@ jobs:
             "description": "$PLUGIN_DESC",
             "author": "$PLUGIN_AUTHOR",
             "category": "$category",
-            "download_url": "https://github.com/choice-form/automation-official-plugins/releases/latest/download/${PACKAGE_NAME}",
+            "download_url": "https://github.com/choice-form/automation-official-plugins/releases/download/${{ needs.create-release.outputs.release_tag }}/${PACKAGE_NAME}",
             "repository_url": "https://github.com/choice-form/automation-official-plugins/tree/main/$plugin_dir",
             "icon_url": "$ICON_URL",
             "updated_at": "$CURRENT_DATE"
@@ -332,7 +334,7 @@ jobs:
           </head>
           <body>
             <div class="header">
-              <h1>🔌 ChoiceForm Official Plugins</h1>
+            <h1>🔌 ChoiceForm Official Plugins</h1>
               <p>Enterprise-grade plugins for automation workflows</p>
             </div>
             
@@ -343,7 +345,7 @@ jobs:
             <div class="stats">
               <p><small>Registry generated: $(date) | <a href="registry.json">JSON API</a></small></p>
             </div>
-
+            
             <script>
               async function loadPlugins() {
                 try {
