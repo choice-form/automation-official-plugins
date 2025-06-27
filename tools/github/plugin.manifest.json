@@ -9,7 +9,7 @@
   "category": "action",
   "domain": "development",
   "subCategory": "version-control",
-  "icon": "icon.png",
+  "icon": "icon.svg",
   "tags": [
     "github",
     "action",
@@ -28,7 +28,7 @@
       "description": "GitHub is a web-based platform for version control and collaboration. It allows developers to store, manage, and track changes to their code. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
       "categoryId": "action",
       "subCategoryId": "development",
-      "icon": "icon.png",
+      "icon": "icon.svg",
       "tags": [
         "github",
         "action",
