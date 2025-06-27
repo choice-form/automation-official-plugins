@@ -1,0 +1,406 @@
+{
+  "name": "@choiceform/github",
+  "version": "1.0.0",
+  "description": "GitHub is a web-based platform for version control and collaboration. It allows developers to store, manage, and track changes to their code. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
+  "author": "wester",
+  "nodeType": "@choiceform/github.action",
+  "automationNodeType": "action.github",
+  "displayName": "GitHub",
+  "category": "action",
+  "domain": "development",
+  "subCategory": "version-control",
+  "icon": "icon.png",
+  "tags": [
+    "github",
+    "action",
+    "git",
+    "repository",
+    "issue",
+    "pull-request",
+    "automation"
+  ],
+  "isPopular": true,
+  "sdkVersion": "^1.0.0",
+  "automationConfigs": {
+    "registry": {
+      "type": "action.github",
+      "name": "GitHub",
+      "description": "GitHub is a web-based platform for version control and collaboration. It allows developers to store, manage, and track changes to their code. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
+      "categoryId": "action",
+      "subCategoryId": "development",
+      "icon": "icon.png",
+      "tags": [
+        "github",
+        "action",
+        "git",
+        "repository",
+        "issue",
+        "pull-request",
+        "automation"
+      ],
+      "isPopular": true
+    },
+    "ports": {
+      "ports": [
+        {
+          "id": "input",
+          "type": "input",
+          "label": "Input",
+          "allowMultiple": false
+        },
+        {
+          "id": "output",
+          "type": "output",
+          "label": "Response",
+          "allowMultiple": true
+        }
+      ]
+    },
+    "toolbar": {
+      "position": "top",
+      "buttons": ["run", "delete", "activate", "more"],
+      "showContent": true
+    },
+    "layout": {
+      "width": 200,
+      "minHeight": 120,
+      "showContent": true
+    },
+    "configSchema": {
+      "fields": [
+        {
+          "key": "token",
+          "type": "string",
+          "label": "Personal Access Token",
+          "description": "GitHub personal access token for authentication",
+          "required": true,
+          "sensitive": true,
+          "placeholder": "ghp_xxxxxxxxxxxxxxxxxxxx",
+          "validation": {
+            "pattern": "^(ghp_|github_pat_).*",
+            "message": "Must be a valid GitHub personal access token"
+          },
+          "ui": {
+            "width": "full",
+            "group": "authentication",
+            "order": 1
+          }
+        },
+        {
+          "key": "action",
+          "type": "select",
+          "label": "Action",
+          "description": "Select the GitHub action to perform",
+          "required": true,
+          "options": [
+            {
+              "value": "create-issue",
+              "label": "Create Issue"
+            },
+            {
+              "value": "create-pr",
+              "label": "Create Pull Request"
+            },
+            {
+              "value": "get-repo-info",
+              "label": "Get Repository Info"
+            },
+            {
+              "value": "list-issues",
+              "label": "List Issues"
+            },
+            {
+              "value": "list-prs",
+              "label": "List Pull Requests"
+            },
+            {
+              "value": "create-release",
+              "label": "Create Release"
+            }
+          ],
+          "ui": {
+            "width": "medium",
+            "group": "operation",
+            "order": 2
+          }
+        },
+        {
+          "key": "owner",
+          "type": "string",
+          "label": "Repository Owner",
+          "description": "GitHub username or organization name",
+          "required": true,
+          "supportExpression": true,
+          "placeholder": "octocat",
+          "ui": {
+            "width": "medium",
+            "group": "repository",
+            "order": 3
+          }
+        },
+        {
+          "key": "repo",
+          "type": "string",
+          "label": "Repository Name",
+          "description": "Name of the GitHub repository",
+          "required": true,
+          "supportExpression": true,
+          "placeholder": "hello-world",
+          "ui": {
+            "width": "medium",
+            "group": "repository",
+            "order": 4
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": "Title",
+          "description": "Title for issue, PR, or release",
+          "required": false,
+          "supportExpression": true,
+          "placeholder": "Fix: Update documentation",
+          "ui": {
+            "width": "full",
+            "group": "content",
+            "order": 5,
+            "showIf": {
+              "action": ["create-issue", "create-pr", "create-release"]
+            }
+          }
+        },
+        {
+          "key": "body",
+          "type": "string",
+          "label": "Body/Description",
+          "description": "Body content for issue, PR, or release",
+          "required": false,
+          "supportExpression": true,
+          "placeholder": "Detailed description...",
+          "ui": {
+            "multiline": true,
+            "width": "full",
+            "group": "content",
+            "order": 6,
+            "showIf": {
+              "action": ["create-issue", "create-pr", "create-release"]
+            }
+          }
+        },
+        {
+          "key": "baseBranch",
+          "type": "string",
+          "label": "Base Branch",
+          "description": "The branch you want to merge into",
+          "required": false,
+          "supportExpression": true,
+          "placeholder": "main",
+          "defaultValue": "main",
+          "ui": {
+            "width": "medium",
+            "group": "pullRequest",
+            "order": 7,
+            "showIf": {
+              "action": ["create-pr"]
+            }
+          }
+        },
+        {
+          "key": "headBranch",
+          "type": "string",
+          "label": "Head Branch",
+          "description": "The branch containing your changes",
+          "required": false,
+          "supportExpression": true,
+          "placeholder": "feature/new-feature",
+          "ui": {
+            "width": "medium",
+            "group": "pullRequest",
+            "order": 8,
+            "showIf": {
+              "action": ["create-pr"]
+            }
+          }
+        },
+        {
+          "key": "labels",
+          "type": "string",
+          "label": "Labels",
+          "description": "Comma-separated list of labels",
+          "required": false,
+          "supportExpression": true,
+          "placeholder": "bug, enhancement, documentation",
+          "ui": {
+            "width": "full",
+            "group": "metadata",
+            "order": 9,
+            "showIf": {
+              "action": ["create-issue", "create-pr"]
+            }
+          }
+        },
+        {
+          "key": "assignees",
+          "type": "string",
+          "label": "Assignees",
+          "description": "Comma-separated list of GitHub usernames to assign",
+          "required": false,
+          "supportExpression": true,
+          "placeholder": "octocat, username",
+          "ui": {
+            "width": "full",
+            "group": "metadata",
+            "order": 10,
+            "showIf": {
+              "action": ["create-issue", "create-pr"]
+            }
+          }
+        },
+        {
+          "key": "tagName",
+          "type": "string",
+          "label": "Tag Name",
+          "description": "Tag name for the release",
+          "required": false,
+          "supportExpression": true,
+          "placeholder": "v1.0.0",
+          "ui": {
+            "width": "medium",
+            "group": "release",
+            "order": 11,
+            "showIf": {
+              "action": ["create-release"]
+            }
+          }
+        },
+        {
+          "key": "targetCommitish",
+          "type": "string",
+          "label": "Target Branch/Commit",
+          "description": "The branch or commit SHA to create the release from",
+          "required": false,
+          "supportExpression": true,
+          "placeholder": "main",
+          "defaultValue": "main",
+          "ui": {
+            "width": "medium",
+            "group": "release",
+            "order": 12,
+            "showIf": {
+              "action": ["create-release"]
+            }
+          }
+        },
+        {
+          "key": "prerelease",
+          "type": "boolean",
+          "label": "Pre-release",
+          "description": "Mark as a pre-release",
+          "required": false,
+          "defaultValue": false,
+          "ui": {
+            "width": "small",
+            "group": "release",
+            "order": 13,
+            "showIf": {
+              "action": ["create-release"]
+            }
+          }
+        },
+        {
+          "key": "state",
+          "type": "select",
+          "label": "State Filter",
+          "description": "Filter issues/PRs by state",
+          "required": false,
+          "defaultValue": "open",
+          "options": [
+            {
+              "value": "open",
+              "label": "Open"
+            },
+            {
+              "value": "closed",
+              "label": "Closed"
+            },
+            {
+              "value": "all",
+              "label": "All"
+            }
+          ],
+          "ui": {
+            "width": "medium",
+            "group": "filters",
+            "order": 14,
+            "showIf": {
+              "action": ["list-issues", "list-prs"]
+            }
+          }
+        },
+        {
+          "key": "limit",
+          "type": "number",
+          "label": "Limit",
+          "description": "Maximum number of items to return",
+          "required": false,
+          "defaultValue": 30,
+          "validation": {
+            "min": 1,
+            "max": 100,
+            "message": "Limit must be between 1 and 100"
+          },
+          "ui": {
+            "width": "small",
+            "group": "filters",
+            "order": 15,
+            "showIf": {
+              "action": ["list-issues", "list-prs"]
+            }
+          }
+        }
+      ],
+      "groups": {
+        "authentication": {
+          "label": "Authentication",
+          "description": "GitHub API authentication"
+        },
+        "operation": {
+          "label": "Operation",
+          "description": "Select the action to perform"
+        },
+        "repository": {
+          "label": "Repository",
+          "description": "Target repository information"
+        },
+        "content": {
+          "label": "Content",
+          "description": "Main content for the operation"
+        },
+        "pullRequest": {
+          "label": "Pull Request Settings",
+          "description": "Settings specific to pull requests",
+          "collapsed": true
+        },
+        "metadata": {
+          "label": "Metadata",
+          "description": "Additional metadata",
+          "collapsed": true
+        },
+        "release": {
+          "label": "Release Settings",
+          "description": "Settings specific to releases",
+          "collapsed": true
+        },
+        "filters": {
+          "label": "Filters",
+          "description": "Filter options for listing operations",
+          "collapsed": true
+        }
+      }
+    }
+  },
+  "metadata": {
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  }
+}

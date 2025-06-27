@@ -1,0 +1,25 @@
+{
+  "type": "action.github",
+  "name": "GitHub",
+  "description": "GitHub is a web-based platform for version control and collaboration. It allows developers to store, manage, and track changes to their code. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
+  "categoryId": "action",
+  "subCategoryId": "development",
+  "icon": "icon.png",
+  "tags": [
+    "github",
+    "action",
+    "git",
+    "repository",
+    "issue",
+    "pull-request",
+    "automation"
+  ],
+  "isPopular": true,
+  "metadata": {
+    "author": "wester",
+    "version": "1.0.0",
+    "license": "MIT",
+    "homepage": "https://github.com/choiceform/automation-official-plugins",
+    "repository": "https://github.com/choiceform/automation-official-plugins"
+  }
+}
