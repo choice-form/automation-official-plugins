@@ -1,6 +1,6 @@
 {
   "name": "@choiceform/discord",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Discord is a communication platform designed for communities. It offers features like text and voice channels, direct messaging, and server-based organization. In Dify, Discord tools allow users to create a random bot with random username and avatar to send messages.",
   "author": "wester",
   "nodeType": "@choiceform/discord.action",
@@ -11,13 +11,15 @@
   "subCategory": "communication",
   "icon": "icon.png",
   "tags": ["discord", "action", "communication", "automation"],
-  "isPopular": false,
   "sdkVersion": "^1.0.0",
   "automationConfigs": {
     "registry": {
       "type": "action.discord",
       "name": "Discord",
-      "description": "Discord is a communication platform designed for communities. It offers features like text and voice channels, direct messaging, and server-based organization. In Dify, Discord tools allow users to create a random bot with random username and avatar to send messages.",
+      "description": {
+        "us": "Discord is a communication platform designed for communities. It offers features like text and voice channels, direct messaging, and server-based organization. In Dify, Discord tools allow users to create a random bot with random username and avatar to send messages.",
+        "cn": "Discord 是一个为社区设计的通信平台。它提供了文本和语音频道、直接消息和基于服务器的组织等功能。在 Dify 中，Discord 工具允许用户创建一个随机用户名和头像的机器人来发送消息。"
+      },
       "categoryId": "action",
       "subCategoryId": "communication",
       "icon": "icon.png",
@@ -55,14 +57,26 @@
         {
           "key": "webhookUrl",
           "type": "string",
-          "label": "Webhook URL",
-          "description": "Discord webhook URL for sending messages",
+          "label": {
+            "us": "Webhook URL",
+            "cn": "Webhook URL"
+          },
+          "description": {
+            "us": "Discord webhook URL for sending messages",
+            "cn": "Discord webhook URL 用于发送消息"
+          },
           "required": true,
           "sensitive": true,
-          "placeholder": "https://discord.com/api/webhooks/...",
+          "placeholder": {
+            "us": "https://discord.com/api/webhooks/...",
+            "cn": "https://discord.com/api/webhooks/..."
+          },
           "validation": {
             "pattern": ".*discord\\.com/api/webhooks/.*",
-            "message": "Must be a valid Discord webhook URL"
+            "message": {
+              "us": "Must be a valid Discord webhook URL",
+              "cn": "必须是有效的 Discord webhook URL"
+            }
           },
           "ui": {
             "width": "full",
@@ -73,14 +87,26 @@
         {
           "key": "content",
           "type": "string",
-          "label": "Message Content",
-          "description": "The text content of the message",
+          "label": {
+            "us": "Message Content",
+            "cn": "消息内容"
+          },
+          "description": {
+            "us": "The text content of the message",
+            "cn": "消息的文本内容"
+          },
           "required": false,
           "supportExpression": true,
-          "placeholder": "Enter your message...",
+          "placeholder": {
+            "us": "Enter your message...",
+            "cn": "输入你的消息..."
+          },
           "validation": {
             "max": 2000,
-            "message": "Message content cannot exceed 2000 characters"
+            "message": {
+              "us": "Message content cannot exceed 2000 characters",
+              "cn": "消息内容不能超过 2000 个字符"
+            }
           },
           "ui": {
             "multiline": true,
@@ -92,14 +118,26 @@
         {
           "key": "username",
           "type": "string",
-          "label": "Bot Username",
-          "description": "Custom username for the bot (optional, random if not provided)",
+          "label": {
+            "us": "Bot Username",
+            "cn": "机器人用户名"
+          },
+          "description": {
+            "us": "Custom username for the bot (optional, random if not provided)",
+            "cn": "自定义机器人用户名（可选，未提供时随机）"
+          },
           "required": false,
           "supportExpression": true,
-          "placeholder": "AutoBot",
+          "placeholder": {
+            "us": "AutoBot",
+            "cn": "AutoBot"
+          },
           "validation": {
             "max": 80,
-            "message": "Username cannot exceed 80 characters"
+            "message": {
+              "us": "Username cannot exceed 80 characters",
+              "cn": "用户名不能超过 80 个字符"
+            }
           },
           "ui": {
             "width": "medium",
@@ -110,14 +148,26 @@
         {
           "key": "avatarUrl",
           "type": "string",
-          "label": "Bot Avatar URL",
-          "description": "Custom avatar URL for the bot (optional, random if not provided)",
+          "label": {
+            "us": "Bot Avatar URL",
+            "cn": "机器人头像 URL"
+          },
+          "description": {
+            "us": "Custom avatar URL for the bot (optional, random if not provided)",
+            "cn": "自定义机器人头像 URL（可选，未提供时随机）"
+          },
           "required": false,
           "supportExpression": true,
-          "placeholder": "https://example.com/avatar.png",
+          "placeholder": {
+            "us": "https://example.com/avatar.png",
+            "cn": "https://example.com/avatar.png"
+          },
           "validation": {
             "pattern": "https?://.*\\.(png|jpg|jpeg|gif|webp)",
-            "message": "Must be a valid image URL (png, jpg, jpeg, gif, webp)"
+            "message": {
+              "us": "Must be a valid image URL (png, jpg, jpeg, gif, webp)",
+              "cn": "必须是有效的图像 URL（png, jpg, jpeg, gif, webp）"
+            }
           },
           "ui": {
             "width": "full",
@@ -128,16 +178,34 @@
       ],
       "groups": {
         "connection": {
-          "label": "Connection Settings",
-          "description": "Discord webhook configuration"
+          "label": {
+            "us": "Connection Settings",
+            "cn": "连接设置"
+          },
+          "description": {
+            "us": "Discord webhook configuration",
+            "cn": "Discord webhook 配置"
+          }
         },
         "message": {
-          "label": "Message Content",
-          "description": "What to send to Discord"
+          "label": {
+            "us": "Message Content",
+            "cn": "消息内容"
+          },
+          "description": {
+            "us": "What to send to Discord",
+            "cn": "要发送给 Discord 的内容"
+          }
         },
         "appearance": {
-          "label": "Bot Appearance",
-          "description": "Customize bot username and avatar",
+          "label": {
+            "us": "Bot Appearance",
+            "cn": "机器人外观"
+          },
+          "description": {
+            "us": "Customize bot username and avatar",
+            "cn": "自定义机器人用户名和头像"
+          },
           "collapsed": true
         }
       }

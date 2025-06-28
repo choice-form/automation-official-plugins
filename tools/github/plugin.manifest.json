@@ -1,6 +1,6 @@
 {
   "name": "@choiceform/github",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "GitHub is a web-based platform for version control and collaboration. It allows developers to store, manage, and track changes to their code. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
   "author": "wester",
   "nodeType": "@choiceform/github.action",
@@ -8,8 +8,7 @@
   "displayName": "GitHub",
   "category": "action",
   "domain": "development",
-  "subCategory": "version-control",
-  "icon": "icon.svg",
+  "icon": "icon.png",
   "tags": [
     "github",
     "action",
@@ -19,16 +18,18 @@
     "pull-request",
     "automation"
   ],
-  "isPopular": true,
   "sdkVersion": "^1.0.0",
   "automationConfigs": {
     "registry": {
       "type": "action.github",
       "name": "GitHub",
-      "description": "GitHub is a web-based platform for version control and collaboration. It allows developers to store, manage, and track changes to their code. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
+      "description": {
+        "us": "GitHub is a web-based platform for version control and collaboration. It allows developers to store, manage, and track changes to their code. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
+        "cn": "GitHub 是一个基于 Web 的版本控制和协作平台。它允许开发人员存储、管理和跟踪他们的代码更改。这个插件使自动化工作流能够与 GitHub 仓库、问题、拉取请求等进行交互。"
+      },
       "categoryId": "action",
       "subCategoryId": "development",
-      "icon": "icon.svg",
+      "icon": "icon.png",
       "tags": [
         "github",
         "action",
@@ -37,8 +38,7 @@
         "issue",
         "pull-request",
         "automation"
-      ],
-      "isPopular": true
+      ]
     },
     "ports": {
       "ports": [
@@ -71,14 +71,26 @@
         {
           "key": "token",
           "type": "string",
-          "label": "Personal Access Token",
-          "description": "GitHub personal access token for authentication",
+          "label": {
+            "us": "Personal Access Token",
+            "cn": "个人访问令牌"
+          },
+          "description": {
+            "us": "GitHub personal access token for authentication",
+            "cn": "GitHub 个人访问令牌用于身份验证"
+          },
           "required": true,
           "sensitive": true,
-          "placeholder": "ghp_xxxxxxxxxxxxxxxxxxxx",
+          "placeholder": {
+            "us": "ghp_xxxxxxxxxxxxxxxxxxxx",
+            "cn": "ghp_xxxxxxxxxxxxxxxxxxxx"
+          },
           "validation": {
             "pattern": "^(ghp_|github_pat_).*",
-            "message": "Must be a valid GitHub personal access token"
+            "message": {
+              "us": "Must be a valid GitHub personal access token",
+              "cn": "必须是有效的 GitHub 个人访问令牌"
+            }
           },
           "ui": {
             "width": "full",
@@ -89,33 +101,57 @@
         {
           "key": "action",
           "type": "select",
-          "label": "Action",
-          "description": "Select the GitHub action to perform",
+          "label": {
+            "us": "Action",
+            "cn": "操作"
+          },
+          "description": {
+            "us": "Select the GitHub action to perform",
+            "cn": "选择要执行的 GitHub 操作"
+          },
           "required": true,
           "options": [
             {
               "value": "create-issue",
-              "label": "Create Issue"
+              "label": {
+                "us": "Create Issue",
+                "cn": "创建问题"
+              }
             },
             {
               "value": "create-pr",
-              "label": "Create Pull Request"
+              "label": {
+                "us": "Create Pull Request",
+                "cn": "创建拉取请求"
+              }
             },
             {
               "value": "get-repo-info",
-              "label": "Get Repository Info"
+              "label": {
+                "us": "Get Repository Info",
+                "cn": "获取仓库信息"
+              }
             },
             {
               "value": "list-issues",
-              "label": "List Issues"
+              "label": {
+                "us": "List Issues",
+                "cn": "列出问题"
+              }
             },
             {
               "value": "list-prs",
-              "label": "List Pull Requests"
+              "label": {
+                "us": "List Pull Requests",
+                "cn": "列出拉取请求"
+              }
             },
             {
               "value": "create-release",
-              "label": "Create Release"
+              "label": {
+                "us": "Create Release",
+                "cn": "创建发布"
+              }
             }
           ],
           "ui": {
@@ -127,11 +163,20 @@
         {
           "key": "owner",
           "type": "string",
-          "label": "Repository Owner",
-          "description": "GitHub username or organization name",
+          "label": {
+            "us": "Repository Owner",
+            "cn": "仓库所有者"
+          },
+          "description": {
+            "us": "GitHub username or organization name",
+            "cn": "GitHub 用户名或组织名称"
+          },
           "required": true,
           "supportExpression": true,
-          "placeholder": "octocat",
+          "placeholder": {
+            "us": "octocat",
+            "cn": "octocat"
+          },
           "ui": {
             "width": "medium",
             "group": "repository",
@@ -141,11 +186,20 @@
         {
           "key": "repo",
           "type": "string",
-          "label": "Repository Name",
-          "description": "Name of the GitHub repository",
+          "label": {
+            "us": "Repository Name",
+            "cn": "仓库名称"
+          },
+          "description": {
+            "us": "Name of the GitHub repository",
+            "cn": "GitHub 仓库名称"
+          },
           "required": true,
           "supportExpression": true,
-          "placeholder": "hello-world",
+          "placeholder": {
+            "us": "hello-world",
+            "cn": "hello-world"
+          },
           "ui": {
             "width": "medium",
             "group": "repository",
@@ -155,11 +209,20 @@
         {
           "key": "title",
           "type": "string",
-          "label": "Title",
-          "description": "Title for issue, PR, or release",
+          "label": {
+            "us": "Title",
+            "cn": "标题"
+          },
+          "description": {
+            "us": "Title for issue, PR, or release",
+            "cn": "问题、拉取请求或发布的标题"
+          },
           "required": false,
           "supportExpression": true,
-          "placeholder": "Fix: Update documentation",
+          "placeholder": {
+            "us": "Fix: Update documentation",
+            "cn": "Fix: Update documentation"
+          },
           "ui": {
             "width": "full",
             "group": "content",
@@ -172,11 +235,20 @@
         {
           "key": "body",
           "type": "string",
-          "label": "Body/Description",
-          "description": "Body content for issue, PR, or release",
+          "label": {
+            "us": "Body/Description",
+            "cn": "正文/描述"
+          },
+          "description": {
+            "us": "Body content for issue, PR, or release",
+            "cn": "问题、拉取请求或发布的正文内容"
+          },
           "required": false,
           "supportExpression": true,
-          "placeholder": "Detailed description...",
+          "placeholder": {
+            "us": "Detailed description...",
+            "cn": "详细描述..."
+          },
           "ui": {
             "multiline": true,
             "width": "full",
@@ -190,11 +262,20 @@
         {
           "key": "baseBranch",
           "type": "string",
-          "label": "Base Branch",
-          "description": "The branch you want to merge into",
+          "label": {
+            "us": "Base Branch",
+            "cn": "基础分支"
+          },
+          "description": {
+            "us": "The branch you want to merge into",
+            "cn": "要合并到的分支"
+          },
           "required": false,
           "supportExpression": true,
-          "placeholder": "main",
+          "placeholder": {
+            "us": "main",
+            "cn": "main"
+          },
           "defaultValue": "main",
           "ui": {
             "width": "medium",
@@ -208,11 +289,20 @@
         {
           "key": "headBranch",
           "type": "string",
-          "label": "Head Branch",
-          "description": "The branch containing your changes",
+          "label": {
+            "us": "Head Branch",
+            "cn": "头部分支"
+          },
+          "description": {
+            "us": "The branch containing your changes",
+            "cn": "包含您更改的分支"
+          },
           "required": false,
           "supportExpression": true,
-          "placeholder": "feature/new-feature",
+          "placeholder": {
+            "us": "feature/new-feature",
+            "cn": "feature/new-feature"
+          },
           "ui": {
             "width": "medium",
             "group": "pullRequest",
@@ -225,11 +315,20 @@
         {
           "key": "labels",
           "type": "string",
-          "label": "Labels",
-          "description": "Comma-separated list of labels",
+          "label": {
+            "us": "Labels",
+            "cn": "标签"
+          },
+          "description": {
+            "us": "Comma-separated list of labels",
+            "cn": "逗号分隔的标签列表"
+          },
           "required": false,
           "supportExpression": true,
-          "placeholder": "bug, enhancement, documentation",
+          "placeholder": {
+            "us": "bug, enhancement, documentation",
+            "cn": "bug, enhancement, documentation"
+          },
           "ui": {
             "width": "full",
             "group": "metadata",
@@ -242,11 +341,20 @@
         {
           "key": "assignees",
           "type": "string",
-          "label": "Assignees",
-          "description": "Comma-separated list of GitHub usernames to assign",
+          "label": {
+            "us": "Assignees",
+            "cn": "分配者"
+          },
+          "description": {
+            "us": "Comma-separated list of GitHub usernames to assign",
+            "cn": "逗号分隔的 GitHub 用户名列表"
+          },
           "required": false,
           "supportExpression": true,
-          "placeholder": "octocat, username",
+          "placeholder": {
+            "us": "octocat, username",
+            "cn": "octocat, username"
+          },
           "ui": {
             "width": "full",
             "group": "metadata",
@@ -259,11 +367,20 @@
         {
           "key": "tagName",
           "type": "string",
-          "label": "Tag Name",
-          "description": "Tag name for the release",
+          "label": {
+            "us": "Tag Name",
+            "cn": "标签名称"
+          },
+          "description": {
+            "us": "Tag name for the release",
+            "cn": "发布的标签名称"
+          },
           "required": false,
           "supportExpression": true,
-          "placeholder": "v1.0.0",
+          "placeholder": {
+            "us": "v1.0.0",
+            "cn": "v1.0.0"
+          },
           "ui": {
             "width": "medium",
             "group": "release",
@@ -276,11 +393,20 @@
         {
           "key": "targetCommitish",
           "type": "string",
-          "label": "Target Branch/Commit",
-          "description": "The branch or commit SHA to create the release from",
+          "label": {
+            "us": "Target Branch/Commit",
+            "cn": "目标分支/提交"
+          },
+          "description": {
+            "us": "The branch or commit SHA to create the release from",
+            "cn": "创建发布的目标分支或提交"
+          },
           "required": false,
           "supportExpression": true,
-          "placeholder": "main",
+          "placeholder": {
+            "us": "main",
+            "cn": "main"
+          },
           "defaultValue": "main",
           "ui": {
             "width": "medium",
@@ -294,8 +420,14 @@
         {
           "key": "prerelease",
           "type": "boolean",
-          "label": "Pre-release",
-          "description": "Mark as a pre-release",
+          "label": {
+            "us": "Pre-release",
+            "cn": "预发布"
+          },
+          "description": {
+            "us": "Mark as a pre-release",
+            "cn": "标记为预发布"
+          },
           "required": false,
           "defaultValue": false,
           "ui": {
@@ -310,22 +442,37 @@
         {
           "key": "state",
           "type": "select",
-          "label": "State Filter",
-          "description": "Filter issues/PRs by state",
+          "label": {
+            "us": "State Filter",
+            "cn": "状态过滤"
+          },
+          "description": {
+            "us": "Filter issues/PRs by state",
+            "cn": "按状态过滤问题/拉取请求"
+          },
           "required": false,
           "defaultValue": "open",
           "options": [
             {
               "value": "open",
-              "label": "Open"
+              "label": {
+                "us": "Open",
+                "cn": "打开"
+              }
             },
             {
               "value": "closed",
-              "label": "Closed"
+              "label": {
+                "us": "Closed",
+                "cn": "关闭"
+              }
             },
             {
               "value": "all",
-              "label": "All"
+              "label": {
+                "us": "All",
+                "cn": "全部"
+              }
             }
           ],
           "ui": {
@@ -340,14 +487,23 @@
         {
           "key": "limit",
           "type": "number",
-          "label": "Limit",
-          "description": "Maximum number of items to return",
+          "label": {
+            "us": "Limit",
+            "cn": "限制"
+          },
+          "description": {
+            "us": "Maximum number of items to return",
+            "cn": "返回的最大项目数"
+          },
           "required": false,
           "defaultValue": 30,
           "validation": {
             "min": 1,
             "max": 100,
-            "message": "Limit must be between 1 and 100"
+            "message": {
+              "us": "Limit must be between 1 and 100",
+              "cn": "限制必须在 1 和 100 之间"
+            }
           },
           "ui": {
             "width": "small",
@@ -361,39 +517,87 @@
       ],
       "groups": {
         "authentication": {
-          "label": "Authentication",
-          "description": "GitHub API authentication"
+          "label": {
+            "us": "Authentication",
+            "cn": "身份验证"
+          },
+          "description": {
+            "us": "GitHub API authentication",
+            "cn": "GitHub API 身份验证"
+          }
         },
         "operation": {
-          "label": "Operation",
-          "description": "Select the action to perform"
+          "label": {
+            "us": "Operation",
+            "cn": "操作"
+          },
+          "description": {
+            "us": "Select the action to perform",
+            "cn": "选择要执行的操作"
+          }
         },
         "repository": {
-          "label": "Repository",
-          "description": "Target repository information"
+          "label": {
+            "us": "Repository",
+            "cn": "仓库"
+          },
+          "description": {
+            "us": "Target repository information",
+            "cn": "目标仓库信息"
+          }
         },
         "content": {
-          "label": "Content",
-          "description": "Main content for the operation"
+          "label": {
+            "us": "Content",
+            "cn": "内容"
+          },
+          "description": {
+            "us": "Main content for the operation",
+            "cn": "操作的主要内容"
+          }
         },
         "pullRequest": {
-          "label": "Pull Request Settings",
-          "description": "Settings specific to pull requests",
+          "label": {
+            "us": "Pull Request Settings",
+            "cn": "拉取请求设置"
+          },
+          "description": {
+            "us": "Settings specific to pull requests",
+            "cn": "拉取请求的特定设置"
+          },
           "collapsed": true
         },
         "metadata": {
-          "label": "Metadata",
-          "description": "Additional metadata",
+          "label": {
+            "us": "Metadata",
+            "cn": "元数据"
+          },
+          "description": {
+            "us": "Additional metadata",
+            "cn": "附加元数据"
+          },
           "collapsed": true
         },
         "release": {
-          "label": "Release Settings",
-          "description": "Settings specific to releases",
+          "label": {
+            "us": "Release Settings",
+            "cn": "发布设置"
+          },
+          "description": {
+            "us": "Settings specific to releases",
+            "cn": "发布的特定设置"
+          },
           "collapsed": true
         },
         "filters": {
-          "label": "Filters",
-          "description": "Filter options for listing operations",
+          "label": {
+            "us": "Filters",
+            "cn": "过滤器"
+          },
+          "description": {
+            "us": "Filter options for listing operations",
+            "cn": "列出操作的过滤选项"
+          },
           "collapsed": true
         }
       }

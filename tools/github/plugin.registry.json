@@ -1,7 +1,10 @@
 {
   "type": "action.github",
   "name": "GitHub",
-  "description": "GitHub is a web-based platform for version control and collaboration. It allows developers to store, manage, and track changes to their code. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
+  "description": {
+    "us": "GitHub is a web-based platform for version control and collaboration. It allows developers to store, manage, and track changes to their code. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
+    "cn": "GitHub 是一个基于 Web 的版本控制和协作平台。它允许开发人员存储、管理和跟踪他们的代码更改。这个插件使自动化工作流能够与 GitHub 仓库、问题、拉取请求等进行交互。"
+  },
   "categoryId": "action",
   "subCategoryId": "development",
   "icon": "icon.png",

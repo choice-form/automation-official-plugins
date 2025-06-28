@@ -9,7 +9,10 @@
     "level": "standard",
     "permissions": ["network", "data"],
     "sandbox": true,
-    "description": "Plugin for messaging, chat, and communication platforms"
+    "description": {
+      "us": "Plugin for messaging, chat, and communication platforms",
+      "cn": "用于消息、聊天和通信平台的插件"
+    }
   },
   "testing": {
     "coverage": 0,
