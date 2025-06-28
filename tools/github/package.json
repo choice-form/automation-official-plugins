@@ -1,6 +1,6 @@
 {
   "name": "@choiceform/github",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "GitHub is a web-based platform for version control and collaboration. It allows developers to store, manage, and track changes to their code. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

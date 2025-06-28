@@ -10,6 +10,9 @@ import type {
   ConfigField,
 } from "@choiceform/automation-sdk";
 
+// 版本常量 - 统一管理插件版本号
+const PLUGIN_VERSION = "1.1.4";
+
 // Discord随机用户名和头像
 const BOT_NAMES = [
   "AutoBot",
@@ -65,7 +68,7 @@ export class Discord extends ActionNode {
   getManifest(): PluginManifest {
     return {
       name: "@choiceform/discord",
-      version: "1.1.3",
+      version: PLUGIN_VERSION,
       description:
         "Send messages to Discord channels using webhooks with customizable bot usernames and avatars",
       author: "ChoiceForm Team",

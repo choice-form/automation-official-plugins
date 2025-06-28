@@ -1,13 +1,16 @@
 {
   "name": "@choiceform/discord",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "author": "wester",
   "submittedAt": "2025-06-26T04:19:03.035Z",
   "category": "action",
   "domain": "communication",
   "security": {
     "level": "standard",
-    "permissions": ["network", "data"],
+    "permissions": [
+      "network",
+      "data"
+    ],
     "sandbox": true,
     "description": {
       "us": "Plugin for messaging, chat, and communication platforms",
@@ -16,7 +19,9 @@
   },
   "testing": {
     "coverage": 0,
-    "testFiles": ["tests/**/*.test.ts"],
+    "testFiles": [
+      "tests/**/*.test.ts"
+    ],
     "integrationTests": false,
     "performanceTests": false
   },

@@ -9,6 +9,9 @@ import type {
   NodeConfigSchema,
 } from "@choiceform/automation-sdk";
 
+// 版本常量 - 统一管理插件版本号
+const PLUGIN_VERSION = "1.0.2";
+
 interface GitHubInputs {
   token?: string;
   action?: string;
@@ -52,7 +55,7 @@ export class GitHub extends ActionNode {
   getManifest(): PluginManifest {
     return {
       name: "@choiceform/github",
-      version: "1.0.1",
+      version: PLUGIN_VERSION,
       description:
         "GitHub is a web-based platform for version control and collaboration. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
       author: "wester",

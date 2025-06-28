@@ -1,6 +1,6 @@
 {
   "name": "@choiceform/github",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "GitHub is a web-based platform for version control and collaboration. It allows developers to store, manage, and track changes to their code. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
   "author": "wester",
   "nodeType": "@choiceform/github.action",
@@ -58,7 +58,12 @@
     },
     "toolbar": {
       "position": "top",
-      "buttons": ["run", "delete", "activate", "more"],
+      "buttons": [
+        "run",
+        "delete",
+        "activate",
+        "more"
+      ],
       "showContent": true
     },
     "layout": {
@@ -228,7 +233,11 @@
             "group": "content",
             "order": 5,
             "showIf": {
-              "action": ["create-issue", "create-pr", "create-release"]
+              "action": [
+                "create-issue",
+                "create-pr",
+                "create-release"
+              ]
             }
           }
         },
@@ -255,7 +264,11 @@
             "group": "content",
             "order": 6,
             "showIf": {
-              "action": ["create-issue", "create-pr", "create-release"]
+              "action": [
+                "create-issue",
+                "create-pr",
+                "create-release"
+              ]
             }
           }
         },
@@ -282,7 +295,9 @@
             "group": "pullRequest",
             "order": 7,
             "showIf": {
-              "action": ["create-pr"]
+              "action": [
+                "create-pr"
+              ]
             }
           }
         },
@@ -308,7 +323,9 @@
             "group": "pullRequest",
             "order": 8,
             "showIf": {
-              "action": ["create-pr"]
+              "action": [
+                "create-pr"
+              ]
             }
           }
         },
@@ -334,7 +351,10 @@
             "group": "metadata",
             "order": 9,
             "showIf": {
-              "action": ["create-issue", "create-pr"]
+              "action": [
+                "create-issue",
+                "create-pr"
+              ]
             }
           }
         },
@@ -360,7 +380,10 @@
             "group": "metadata",
             "order": 10,
             "showIf": {
-              "action": ["create-issue", "create-pr"]
+              "action": [
+                "create-issue",
+                "create-pr"
+              ]
             }
           }
         },
@@ -386,7 +409,9 @@
             "group": "release",
             "order": 11,
             "showIf": {
-              "action": ["create-release"]
+              "action": [
+                "create-release"
+              ]
             }
           }
         },
@@ -413,7 +438,9 @@
             "group": "release",
             "order": 12,
             "showIf": {
-              "action": ["create-release"]
+              "action": [
+                "create-release"
+              ]
             }
           }
         },
@@ -435,7 +462,9 @@
             "group": "release",
             "order": 13,
             "showIf": {
-              "action": ["create-release"]
+              "action": [
+                "create-release"
+              ]
             }
           }
         },
@@ -480,7 +509,10 @@
             "group": "filters",
             "order": 14,
             "showIf": {
-              "action": ["list-issues", "list-prs"]
+              "action": [
+                "list-issues",
+                "list-prs"
+              ]
             }
           }
         },
@@ -510,7 +542,10 @@
             "group": "filters",
             "order": 15,
             "showIf": {
-              "action": ["list-issues", "list-prs"]
+              "action": [
+                "list-issues",
+                "list-prs"
+              ]
             }
           }
         }
