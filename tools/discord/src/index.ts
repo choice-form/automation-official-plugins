@@ -65,7 +65,7 @@ export class Discord extends ActionNode {
   getManifest(): PluginManifest {
     return {
       name: "@choiceform/discord",
-      version: "1.0.1",
+      version: "1.1.3",
       description:
         "Send messages to Discord channels using webhooks with customizable bot usernames and avatars",
       author: "ChoiceForm Team",

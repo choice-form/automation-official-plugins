@@ -52,7 +52,7 @@ export class GitHub extends ActionNode {
   getManifest(): PluginManifest {
     return {
       name: "@choiceform/github",
-      version: "1.0.0",
+      version: "1.0.1",
       description:
         "GitHub is a web-based platform for version control and collaboration. This plugin enables automation workflows to interact with GitHub repositories, issues, pull requests, and more.",
       author: "wester",
